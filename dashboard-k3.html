@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antrian K3D</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        .tab-container {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0 10px 0;
+            border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            width: auto;
+            padding: 10px 28px;
+            border-radius: 40px 40px 0 0;
+            background: transparent;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn::after { display: none; }
+
+        .tab-btn:hover {
+            background: rgba(52, 211, 153, 0.05);
+            transform: translateY(-2px);
+            color: #1e293b;
+        }
+
+        .tab-btn.active {
+            background: transparent;
+            color: #059669;
+            font-weight: 700;
+            border-bottom: 4px solid #34d399;
+            border-radius: 0;
+        }
+
+        .tab-content { display: none; padding-top: 10px; }
+        .tab-content.active { display: block; }
+
+        .badge-count {
+            background: #e2e8f0;
+            color: #334155;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .tab-btn.active .badge-count {
+            background: #a7f3d0;
+            color: #065f46;
+        }
+
+        .btn-panggil-ulang {
+            width: auto;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            box-shadow: 0 6px 16px -4px rgba(245, 158, 11, 0.4);
+            letter-spacing: 0.5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-panggil-ulang:hover {
+            transform: scale(1.06) translateY(-2px);
+            box-shadow: 0 12px 24px -6px rgba(245, 158, 11, 0.5);
+        }
+
+        .card-antrian {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 18px 24px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-antrian::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            border-radius: 0 4px 4px 0;
+            background: #34d399;
+        }
+
+        .card-antrian:hover {
+            transform: translateX(6px);
+            box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.15);
+            border-color: #a7f3d0;
+        }
+
+        .card-antrian.called {
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .card-antrian.called::before {
+            background: #94a3b8;
+        }
+
+        .card-antrian .waktu-panggil {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-left: 12px;
+        }
+
+        /* ===== STYLE UNTUK WAKTU DAFTAR (WAITING) ===== */
+        .card-antrian .waktu-daftar {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-left: 12px;
+        }
+
+        .badge-klaster {
+            background: #34d399;
+            color: #064e3b;
+        }
+
+        .btn-panggil {
+            width: auto;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.4);
+            letter-spacing: 0.5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-panggil:hover {
+            transform: scale(1.06) translateY(-2px);
+            box-shadow: 0 12px 24px -6px rgba(16, 185, 129, 0.5);
+        }
+
+        @media (max-width: 640px) {
+            .tab-container { gap: 4px; overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
+            .tab-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .btn-panggil-ulang, .btn-panggil { padding: 10px 16px; font-size: 0.8rem; }
+            .card-antrian { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-dashboard">
+            <h1><i class="fas fa-user" style="color:#34d399;"></i> Antrian Klaster 3</h1>
+            <span class="badge-klaster">Usia Dewasa</span>
+        </div>
+        <p>Kelola antrian pasien di klaster Anda</p>
+        <!-- ===== TAMBAHAN TANGGAL DI SINI ===== -->
+        <p style="margin-top: -10px; margin-bottom: 16px; color: #64748b; font-size: 0.9rem; border-left: none; padding-left: 0; background: none;">
+            <i class="fas fa-calendar-alt" style="margin-right: 6px;"></i> <span id="tanggalSekarang">Memuat tanggal...</span>
+        </p>
+
+        <div class="tab-container">
+            <button class="tab-btn active" data-tab="waiting" onclick="switchTab('waiting')">
+                <i class="fas fa-users"></i> Menunggu <span class="badge-count" id="count-waiting">0</span>
+            </button>
+            <button class="tab-btn" data-tab="called" onclick="switchTab('called')">
+                <i class="fas fa-phone"></i> Sudah Dipanggil <span class="badge-count" id="count-called">0</span>
+            </button>
+        </div>
+
+        <div id="tab-waiting" class="tab-content active">
+            <div id="daftarWaiting" class="daftar-antrian">
+                <p style="color: #999; text-align:center; padding:20px;">Memuat data...</p>
+            </div>
+        </div>
+
+        <div id="tab-called" class="tab-content">
+            <div id="daftarCalled" class="daftar-antrian">
+                <p style="color: #999; text-align:center; padding:20px;">Memuat data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const klasterSaya = 'K3';
+
+        // ===== FUNGSI UPDATE TANGGAL =====
+        function updateTanggal() {
+            const el = document.getElementById('tanggalSekarang');
+            if (!el) return;
+            try {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateString = now.toLocaleDateString('id-ID', options);
+                el.textContent = dateString;
+            } catch (e) {
+                el.textContent = 'Memuat tanggal...';
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+        }
+
+        function renderAntrian(snapshot) {
+            const containerWaiting = document.getElementById('daftarWaiting');
+            const containerCalled = document.getElementById('daftarCalled');
+            containerWaiting.innerHTML = '';
+            containerCalled.innerHTML = '';
+
+            let waitingCount = 0;
+            let calledCount = 0;
+
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                if (data.klaster !== klasterSaya) return;
+
+                const id = childSnapshot.key;
+                const nomor = data.nomor_antrian;
+                const nama = data.nama_pasien;
+                const status = data.status;
+                const waktuPanggil = data.waktu_panggil || 0;
+                const waktuDaftar = data.waktu_daftar || 0;
+
+                const div = document.createElement('div');
+                div.className = 'card-antrian';
+
+                const leftDiv = document.createElement('div');
+                if (status === 'waiting') {
+                    leftDiv.innerHTML = `
+                        <strong>${nomor}</strong> - ${nama}
+                        <span class="waktu-daftar"><i class="far fa-clock"></i> ${new Date(waktuDaftar).toLocaleTimeString()}</span>
+                    `;
+                } else {
+                    leftDiv.innerHTML = `
+                        <strong>${nomor}</strong> - ${nama}
+                        <span class="waktu-panggil">🕐 ${new Date(waktuPanggil).toLocaleTimeString()}</span>
+                    `;
+                }
+
+                const rightDiv = document.createElement('div');
+
+                if (status === 'waiting') {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-panggil';
+                    btn.textContent = '📢 Panggil';
+                    btn.dataset.id = id;
+                    btn.dataset.nama = nama;
+                    btn.dataset.nomor = nomor;
+                    btn.addEventListener('click', async function() {
+                        if (confirm(`Panggil ${nama} (${nomor}) ?`)) {
+                            try {
+                                await database.ref('antrians/' + id).update({
+                                    status: 'called',
+                                    waktu_panggil: Date.now()
+                                });
+                                alert(`✅ ${nomor} - ${nama} berhasil dipanggil!`);
+                            } catch (error) {
+                                alert('❌ Gagal memanggil: ' + error.message);
+                            }
+                        }
+                    });
+                    rightDiv.appendChild(btn);
+                    waitingCount++;
+                } else if (status === 'called') {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-panggil-ulang';
+                    btn.textContent = '🔄 Panggil Ulang';
+                    btn.dataset.id = id;
+                    btn.dataset.nama = nama;
+                    btn.dataset.nomor = nomor;
+                    btn.addEventListener('click', async function() {
+                        if (confirm(`Panggil ULANG ${nama} (${nomor}) ?\nPasien akan muncul kembali di layar TV.`)) {
+                            try {
+                                await database.ref('antrians/' + id).update({
+                                    status: 'called',
+                                    waktu_panggil: Date.now()
+                                });
+                                alert(`✅ ${nomor} - ${nama} berhasil dipanggil ULANG!`);
+                            } catch (error) {
+                                alert('❌ Gagal memanggil ulang: ' + error.message);
+                            }
+                        }
+                    });
+                    rightDiv.appendChild(btn);
+                    calledCount++;
+                    div.classList.add('called');
+                }
+
+                div.appendChild(leftDiv);
+                div.appendChild(rightDiv);
+
+                if (status === 'waiting') {
+                    containerWaiting.appendChild(div);
+                } else {
+                    containerCalled.appendChild(div);
+                }
+            });
+
+            if (waitingCount === 0) {
+                containerWaiting.innerHTML = `<p style="color: #aaa; text-align:center; padding:20px;">✅ Tidak ada pasien menunggu.</p>`;
+            }
+            if (calledCount === 0) {
+                containerCalled.innerHTML = `<p style="color: #aaa; text-align:center; padding:20px;">📭 Belum ada pasien yang dipanggil.</p>`;
+            }
+
+            document.getElementById('count-waiting').textContent = waitingCount;
+            document.getElementById('count-called').textContent = calledCount;
+        }
+
+        database.ref('antrians').on('value', (snapshot) => {
+            renderAntrian(snapshot);
+        });
+
+        // ===== INISIALISASI TANGGAL =====
+        updateTanggal();
+
+        console.log(`🖥️ Dashboard ${klasterSaya} siap.`);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pusat - Monitoring & Pendaftaran</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        /* ============================================
+           GAYA KHUSUS UNTUK DASHBOARD UTAMA (READ-ONLY)
+           ============================================ */
+        body {
+            background: #eef2ff;
+            background-image: radial-gradient(ellipse at 10% 20%, rgba(79, 70, 229, 0.12) 0%, transparent 50%),
+                              radial-gradient(ellipse at 90% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                              linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px;
+            align-items: flex-start;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dashboard-utama {
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER UTAMA ===== */
+        .header-utama {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            padding: 18px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-puskesmas {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            background: white;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        .logo-puskesmas:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        .header-utama .judul h1 {
+            font-size: 1.8rem;
+            margin-bottom: 2px;
+            background: linear-gradient(135deg, #1e1b4b, #4338ca);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-utama .judul p {
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin: 0;
+            border: none;
+            padding: 0;
+            background: none;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .badge-readonly {
+            background: rgba(100, 116, 139, 0.15);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .statistik-utama {
+            display: flex;
+            gap: 24px;
+        }
+        .stat-item {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+        }
+        .stat-item span {
+            color: #4338ca;
+            font-size: 1.2rem;
+            margin-right: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-tambah-pasien {
+            width: auto;
+            padding: 12px 28px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #4338ca, #6366f1);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-tambah-pasien:hover {
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 12px 28px -8px rgba(79, 70, 229, 0.5);
+        }
+        .btn-tambah-pasien i {
+            margin-right: 6px;
+        }
+
+        .btn-reset-semua {
+            width: auto;
+            padding: 12px 24px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-reset-semua:hover {
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 12px 28px -8px rgba(239, 68, 68, 0.5);
+        }
+        .btn-reset-semua:active {
+            transform: scale(0.96);
+        }
+        .btn-reset-semua i {
+            font-size: 1rem;
+        }
+
+        /* ===== TOOLBAR TERPADU ===== */
+        .toolbar-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            padding: 6px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.04);
+        }
+
+        .quick-access {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 16px;
+            flex: 1 1 auto;
+        }
+
+        .quick-access .label-qs {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-right: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            color: #1e293b;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.12);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .quick-btn:active {
+            transform: scale(0.96);
+        }
+
+        .quick-btn.k2 { border-left: 3px solid #38bdf8; }
+        .quick-btn.k3 { border-left: 3px solid #34d399; }
+        .quick-btn.k4 { border-left: 3px solid #fbbf24; }
+        .quick-btn.tv { border-left: 3px solid #a78bfa; }
+
+        .quick-btn .icon {
+            font-size: 1rem;
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-container {
+            display: flex;
+            align-items: center;
+            flex: 0 1 380px;
+            min-width: 180px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            padding: 0 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:focus-within {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 25px -10px rgba(79, 70, 229, 0.2);
+            border-color: #818cf8;
+        }
+
+        .search-icon {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .search-clear {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(226, 232, 240, 0.6);
+            color: #64748b;
+            font-size: 1rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .search-clear:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: scale(1.05);
+        }
+
+        .search-clear.visible {
+            display: flex;
+        }
+
+        .search-info {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-left: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* ===== GRID 3 KOLOM (tanpa K5) ===== */
+        .grid-klaster {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        /* ===== PANEL KLASTER ===== */
+        .panel-klaster {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 20px 16px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            max-height: 75vh;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .panel-klaster:hover {
+            box-shadow: 0 20px 50px -16px rgba(0, 0, 0, 0.12);
+        }
+
+        .panel-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+            flex-wrap: wrap;
+        }
+
+        .panel-header .panel-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .panel-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-header .badge-klaster {
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .badge-k2 { background: #38bdf8; }
+        .badge-k3 { background: #34d399; }
+        .badge-k4 { background: #fbbf24; color: #1e293b; }
+
+        .btn-reset-klaster {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: none;
+            width: auto;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+        }
+
+        .btn-reset-klaster:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            transform: scale(1.04);
+            box-shadow: 0 4px 12px -4px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-reset-klaster:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== DAFTAR ISI PANEL ===== */
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .panel-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        .panel-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .sub-section {
+            margin-bottom: 14px;
+        }
+        .sub-section .label-section {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .sub-section .label-section .count-badge {
+            background: #e2e8f0;
+            padding: 0 8px;
+            border-radius: 20px;
+            color: #475569;
+        }
+
+        .card-antrian-panel {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 8px 10px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+        .card-antrian-panel:hover {
+            background: white;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .card-antrian-panel .info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .card-antrian-panel .info strong {
+            font-weight: 700;
+            color: #1e1b4b;
+            background: rgba(99, 102, 241, 0.08);
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+        .card-antrian-panel .info .nama {
+            font-weight: 500;
+            color: #334155;
+            font-size: 0.85rem;
+        }
+        .card-antrian-panel .info .waktu-kecil {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            margin-left: 6px;
+        }
+
+        .card-antrian-panel.called-status {
+            opacity: 0.7;
+            background: rgba(241, 245, 249, 0.4);
+        }
+        .card-antrian-panel.called-status .info strong {
+            background: rgba(148, 163, 184, 0.2);
+            color: #64748b;
+        }
+
+        .empty-state {
+            color: #94a3b8;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 48px;
+            max-width: 560px;
+            width: 100%;
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .modal-content .close-modal {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #94a3b8;
+            width: auto;
+            padding: 0 8px;
+            box-shadow: none;
+        }
+        .modal-content .close-modal:hover {
+            transform: rotate(90deg);
+            color: #1e293b;
+        }
+        .modal-content .form-group {
+            margin-bottom: 18px;
+        }
+        .modal-content .btn-simpan-modal {
+            background: linear-gradient(135deg, #4338ca, #6366f1);
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.3);
+        }
+        .modal-content .btn-simpan-modal:hover {
+            transform: scale(1.02);
+        }
+
+        /* ===== TOAST ===== */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 420px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 20px;
+            padding: 16px 20px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transform: translateX(calc(100% + 40px));
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), 
+                        opacity 0.4s ease,
+                        margin 0.3s ease;
+            border-left: 6px solid #6366f1;
+        }
+
+        .toast-item.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-item .toast-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .toast-item .toast-body {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+        .toast-item .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 0 4px;
+            width: auto;
+            box-shadow: none;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+        .toast-item .toast-close:hover {
+            color: #1e293b;
+            transform: scale(1.2);
+        }
+        .toast-item.success { border-left-color: #10b981; }
+        .toast-item.success .toast-body { color: #065f46; }
+        .toast-item.error { border-left-color: #ef4444; }
+        .toast-item.error .toast-body { color: #991b1b; }
+        .toast-item.warning { border-left-color: #f59e0b; }
+        .toast-item.warning .toast-body { color: #92400e; }
+        .toast-item.info { border-left-color: #3b82f6; }
+        .toast-item.info .toast-body { color: #1e40af; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .grid-klaster {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 992px) {
+            .toolbar-container {
+                border-radius: 32px;
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                background: rgba(255, 255, 255, 0.4);
+            }
+            .quick-access {
+                padding: 0;
+                justify-content: center;
+            }
+            .search-container {
+                flex: 1 1 auto;
+                width: 100%;
+                min-width: unset;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-klaster {
+                grid-template-columns: 1fr;
+            }
+            .header-utama {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px 20px;
+            }
+            .header-left {
+                justify-content: center;
+                text-align: center;
+            }
+            .logo-puskesmas {
+                width: 56px;
+                height: 56px;
+            }
+            .statistik-utama {
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+            .header-actions {
+                justify-content: center;
+                width: 100%;
+            }
+            .btn-reset-semua, .btn-tambah-pasien {
+                flex: 1;
+                justify-content: center;
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            .quick-access .label-qs {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 2px;
+            }
+            .quick-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .panel-klaster {
+                max-height: 55vh;
+                padding: 16px;
+            }
+            .panel-header h2 {
+                font-size: 1.1rem;
+            }
+            .panel-header .badge-klaster {
+                font-size: 0.6rem;
+            }
+            .modal-content {
+                padding: 24px 20px;
+            }
+            #toast-container {
+                top: 16px;
+                right: 16px;
+                max-width: calc(100% - 32px);
+            }
+            .toast-item {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+            .panel-header {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .btn-reset-klaster {
+                font-size: 0.6rem;
+                padding: 2px 8px;
+            }
+        }
+        @media (max-width: 480px) {
+            .panel-header .panel-title-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .card-antrian-panel {
+                font-size: 0.8rem;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .card-antrian-panel .info strong {
+                font-size: 0.75rem;
+                padding: 2px 6px;
+            }
+            .btn-reset-semua, .btn-tambah-pasien {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-utama">
+        
+        <!-- ===== HEADER ===== -->
+        <header class="header-utama">
+            <div class="header-left">
+                <img src="logo-puskesmas.png" alt="Logo Puskesmas" class="logo-puskesmas" id="logoPuskesmas">
+                <div class="judul">
+                    <h1><i style="color:#4338ca; margin-right:8px;"></i> UPTD Puskesmas Wajo</h1>
+                    <p>
+                        <span class="badge-readonly"><i class="fas fa-lock"></i> Sistem Antrian Pasien</span>
+                        <span id="tanggalSekarang" style="margin-left: 12px; color: #64748b; font-weight: 500;">📅 Memuat tanggal...</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="statistik-utama">
+                    <div class="stat-item"><i class="fas fa-users"></i> Total Menunggu: <span id="totalWaiting">0</span></div>
+                    <div class="stat-item"><i class="fas fa-phone"></i> Total Dipanggil: <span id="totalCalled">0</span></div>
+                </div>
+                <button class="btn-tambah-pasien" onclick="bukaModal()"><i class="fas fa-plus"></i> Tambah Pasien</button>
+                <button class="btn-reset-semua" onclick="resetAllKlaster()"><i class="fas fa-trash-alt"></i> Reset Semua</button>
+            </div>
+        </header>
+
+        <!-- ===== TOOLBAR ===== -->
+        <div class="toolbar-container">
+            <div class="quick-access">
+                <span class="label-qs"><i class="fas fa-rocket"></i> Pemanggilan Antrian :</span>
+                <a href="dashboard-k2.html" class="quick-btn k2" target="_blank">
+                    <span class="icon"><i class="fas fa-child"></i></span> KL 2 (Anak & Remaja)
+                </a>
+                <a href="dashboard-k3.html" class="quick-btn k3" target="_blank">
+                    <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Dewasa)
+                </a>
+                <a href="dashboard-k4.html" class="quick-btn k4" target="_blank">
+                    <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Lansia)
+                </a>
+                <a href="tv.html" class="quick-btn tv" target="_blank">
+                    <span class="icon"><i class="fas fa-tv"></i></span> Tampilan TV
+                </a>
+            </div>
+
+            <div class="search-container">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Cari pasien / nomor antrian..." autocomplete="off">
+                <button class="search-clear" id="clearSearch" onclick="resetSearch()"><i class="fas fa-times"></i></button>
+                <span class="search-info" id="searchInfo">0 hasil</span>
+            </div>
+        </div>
+
+        <!-- ===== GRID 3 KOLOM ===== -->
+        <div class="grid-klaster" id="gridKlaster">
+            <!-- Panel K2 -->
+            <div class="panel-klaster" id="panelK2">
+                <div class="panel-header">
+                    <div class="panel-title-group">
+                        <h2><i class="fas fa-child" style="color:#38bdf8;"></i> Klaster 2</h2>
+                        <span class="badge-klaster badge-k2">Anak & Remaja</span>
+                    </div>
+                    <button class="btn-reset-klaster" onclick="resetKlaster('K2')"><i class="fas fa-trash-alt"></i> Reset</button>
+                </div>
+                <div class="panel-body" id="bodyK2"></div>
+            </div>
+
+            <!-- Panel K3 (Usia Dewasa) -->
+            <div class="panel-klaster" id="panelK3">
+                <div class="panel-header">
+                    <div class="panel-title-group">
+                        <h2><i class="fas fa-user" style="color:#34d399;"></i> Klaster 3</h2>
+                        <span class="badge-klaster badge-k3">Usia Dewasa</span>
+                    </div>
+                    <button class="btn-reset-klaster" onclick="resetKlaster('K3')"><i class="fas fa-trash-alt"></i> Reset</button>
+                </div>
+                <div class="panel-body" id="bodyK3"></div>
+            </div>
+
+            <!-- Panel K4 (Usia Lanjut) -->
+            <div class="panel-klaster" id="panelK4">
+                <div class="panel-header">
+                    <div class="panel-title-group">
+                        <h2><i class="fas fa-user" style="color:#fbbf24;"></i> Klaster 3</h2>
+                        <span class="badge-klaster badge-k4">Usia Lanjut</span>
+                    </div>
+                    <button class="btn-reset-klaster" onclick="resetKlaster('K4')"><i class="fas fa-trash-alt"></i> Reset</button>
+                </div>
+                <div class="panel-body" id="bodyK4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalDaftar">
+        <div class="modal-content">
+            <button class="close-modal" onclick="tutupModal()"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-file-medical" style="color:#4338ca; margin-right:10px;"></i> Daftar Pasien Baru</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Input data pasien untuk ditambahkan ke antrian</p>
+            
+            <form id="formModal">
+                <div class="form-group">
+                    <label><i class="fas fa-hashtag"></i> Nomor Antrian</label>
+                    <input type="text" id="modalNomor" placeholder="Contoh: K3-001" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Nama Lengkap</label>
+                    <input type="text" id="modalNama" placeholder="Nama pasien" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-people-group"></i> Klaster Tujuan</label>
+                    <select id="modalKlaster" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="K2">Klaster 2 (Anak & Remaja)</option>
+                        <option value="K3">Klaster 3 (Usia Dewasa)</option>
+                        <option value="K4">Klaster 3 (Usia Lanjut)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-simpan-modal" id="btnSimpanModal"><i class="fas fa-save"></i> Simpan Antrian</button>
+                <div id="modalNotif" style="margin-top:12px; font-weight:500; color:#4338ca; text-align:center;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast-container"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // ============================================================
+        // 1. TOAST
+        // ============================================================
+        function showToast(message, type = 'success', duration = 3500) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const config = {
+                success: { icon: '✅', borderColor: '#10b981' },
+                error: { icon: '❌', borderColor: '#ef4444' },
+                warning: { icon: '⚠️', borderColor: '#f59e0b' },
+                info: { icon: 'ℹ️', borderColor: '#3b82f6' }
+            };
+
+            const chosen = config[type] || config.info;
+
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type}`;
+            toast.style.borderLeftColor = chosen.borderColor;
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${chosen.icon}</span>
+                <span class="toast-body">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            const timeoutId = setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentElement) toast.remove();
+                    }, 400);
+                }
+            }, duration);
+
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                clearTimeout(timeoutId);
+            });
+        }
+
+        // ============================================================
+        // 2. RESET SEMUA ANTRIAN
+        // ============================================================
+        async function resetAllKlaster() {
+            const confirmFirst = confirm(`⚠️ PERINGATAN BESAR!\n\nAnda akan menghapus SEMUA data antrian dari SEMUA KLASTER (K2, K3, K4).\n\nData yang dihapus TIDAK DAPAT DIKEMBALIKAN.\n\nApakah Anda yakin ingin melanjutkan?`);
+            if (!confirmFirst) {
+                showToast('Reset dibatalkan.', 'info');
+                return;
+            }
+
+            const userInput = prompt(`🔒 KONFIRMASI AKHIR\n\nKetik "RESET SEMUA" (huruf besar) untuk menghapus SELURUH data antrian di semua klaster:\n\nKetik "BATAL" untuk membatalkan.`);
+            
+            if (userInput === null) {
+                showToast('Reset dibatalkan.', 'info');
+                return;
+            }
+
+            if (userInput.toUpperCase() !== 'RESET SEMUA') {
+                showToast(`❌ Reset gagal: Kode "${userInput}" tidak cocok dengan "RESET SEMUA".`, 'error');
+                return;
+            }
+
+            try {
+                const snapshot = await database.ref('antrians').once('value');
+                
+                if (!snapshot.exists()) {
+                    showToast('📭 Tidak ada data antrian untuk di-reset.', 'info');
+                    return;
+                }
+
+                const updates = {};
+                snapshot.forEach((child) => {
+                    updates[child.key] = null;
+                });
+
+                await database.ref('antrians').update(updates);
+                
+                showToast('✅ SEMUA data antrian berhasil di-reset!', 'success');
+                console.log('🔄 Semua data antrian berhasil direset.');
+
+            } catch (error) {
+                showToast(`❌ Gagal mereset semua antrian: ${error.message}`, 'error');
+                console.error('Error reset all:', error);
+            }
+        }
+
+        // ============================================================
+        // 3. RESET PER KLASTER
+        // ============================================================
+        async function resetKlaster(klaster) {
+            const namaKlaster = {
+                'K2': 'Klaster 2 (Anak & Remaja)',
+                'K3': 'Klaster 3 (Usia Dewasa)',
+                'K4': 'Klaster 3 (Usia Lanjut)'
+            };
+
+            const confirmFirst = confirm(`⚠️ PERINGATAN!\n\nAnda akan menghapus SEMUA data antrian di ${namaKlaster[klaster]}.\n\nData yang dihapus TIDAK DAPAT DIKEMBALIKAN.\n\nApakah Anda yakin ingin melanjutkan?`);
+            if (!confirmFirst) {
+                showToast('Reset dibatalkan.', 'info');
+                return;
+            }
+
+            const userInput = prompt(`🔒 KONFIRMASI AKHIR\n\nKetik "${klaster}" untuk menghapus semua antrian di ${namaKlaster[klaster]}:\n(Ketik "BATAL" untuk membatalkan)`);
+            
+            if (userInput === null) {
+                showToast('Reset dibatalkan.', 'info');
+                return;
+            }
+
+            if (userInput.toUpperCase() !== klaster) {
+                showToast(`❌ Reset gagal: Kode "${userInput}" tidak cocok dengan "${klaster}".`, 'error');
+                return;
+            }
+
+            try {
+                const snapshot = await database.ref('antrians').orderByChild('klaster').equalTo(klaster).once('value');
+                
+                if (!snapshot.exists()) {
+                    showToast(`📭 Tidak ada data di ${namaKlaster[klaster]} untuk di-reset.`, 'info');
+                    return;
+                }
+
+                const updates = {};
+                snapshot.forEach((child) => {
+                    updates[child.key] = null;
+                });
+
+                await database.ref('antrians').update(updates);
+                
+                showToast(`✅ ${namaKlaster[klaster]} berhasil di-reset!`, 'success');
+                console.log(`🔄 Data klaster ${klaster} berhasil direset.`);
+
+            } catch (error) {
+                showToast(`❌ Gagal mereset ${namaKlaster[klaster]}: ${error.message}`, 'error');
+                console.error('Error reset klaster:', error);
+            }
+        }
+
+        // ============================================================
+        // 4. VARIABEL GLOBAL (hanya K2, K3, K4)
+        // ============================================================
+        const panelIds = ['K2', 'K3', 'K4'];
+        let searchQuery = '';
+        let allDataSnapshot = null;
+
+        // ============================================================
+        // 5. RENDER SEMUA PANEL (DENGAN WAKTU)
+        // ============================================================
+        function renderSemua(snapshot) {
+            allDataSnapshot = snapshot;
+
+            panelIds.forEach(k => {
+                document.getElementById(`body${k}`).innerHTML = '';
+            });
+
+            let totalWaitingGlobal = 0;
+            let totalCalledGlobal = 0;
+
+            let dataKlaster = { 
+                K2: { waiting: [], called: [] },
+                K3: { waiting: [], called: [] },
+                K4: { waiting: [], called: [] }
+            };
+
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                const k = data.klaster;
+                if (!dataKlaster[k]) return;
+
+                const entry = {
+                    id: childSnapshot.key,
+                    nomor: data.nomor_antrian,
+                    nama: data.nama_pasien,
+                    status: data.status,
+                    waktu_daftar: data.waktu_daftar || 0,
+                    waktu_panggil: data.waktu_panggil || 0
+                };
+
+                if (data.status === 'waiting') {
+                    dataKlaster[k].waiting.push(entry);
+                    totalWaitingGlobal++;
+                } else if (data.status === 'called') {
+                    dataKlaster[k].called.push(entry);
+                    totalCalledGlobal++;
+                }
+            });
+
+            document.getElementById('totalWaiting').textContent = totalWaitingGlobal;
+            document.getElementById('totalCalled').textContent = totalCalledGlobal;
+
+            const query = searchQuery.toLowerCase().trim();
+            let totalHasilPencarian = 0;
+
+            panelIds.forEach(k => {
+                const container = document.getElementById(`body${k}`);
+                
+                const waitingList = dataKlaster[k].waiting
+                    .sort((a, b) => a.nomor.localeCompare(b.nomor))
+                    .filter(item => {
+                        if (!query) return true;
+                        return item.nomor.toLowerCase().includes(query) || 
+                               item.nama.toLowerCase().includes(query);
+                    });
+
+                const calledList = dataKlaster[k].called
+                    .sort((a, b) => b.waktu_panggil - a.waktu_panggil)
+                    .filter(item => {
+                        if (!query) return true;
+                        return item.nomor.toLowerCase().includes(query) || 
+                               item.nama.toLowerCase().includes(query);
+                    });
+
+                totalHasilPencarian += waitingList.length + calledList.length;
+
+                let html = '';
+
+                // SECTION WAITING
+                html += `<div class="sub-section">
+                            <div class="label-section">
+                                <span>⏳ Menunggu</span>
+                                <span class="count-badge">${waitingList.length}</span>
+                            </div>`;
+                if (waitingList.length === 0) {
+                    html += `<div class="empty-state">${query ? 'Tidak ada yang cocok' : 'Tidak ada antrian menunggu'}</div>`;
+                } else {
+                    waitingList.forEach(item => {
+                        const waktuDaftar = item.waktu_daftar ? new Date(item.waktu_daftar).toLocaleTimeString() : '';
+                        html += `
+                            <div class="card-antrian-panel">
+                                <div class="info">
+                                    <strong>${item.nomor}</strong>
+                                    <span class="nama">${item.nama}</span>
+                                    <span class="waktu-kecil"><i class="far fa-clock"></i> ${waktuDaftar}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                // SECTION CALLED
+                html += `<div class="sub-section">
+                            <div class="label-section">
+                                <span>📢 Sudah Dipanggil</span>
+                                <span class="count-badge">${calledList.length}</span>
+                            </div>`;
+                if (calledList.length === 0) {
+                    html += `<div class="empty-state">${query ? 'Tidak ada yang cocok' : 'Belum ada panggilan'}</div>`;
+                } else {
+                    calledList.forEach(item => {
+                        const waktuPanggil = item.waktu_panggil ? new Date(item.waktu_panggil).toLocaleTimeString() : '';
+                        html += `
+                            <div class="card-antrian-panel called-status">
+                                <div class="info">
+                                    <strong>${item.nomor}</strong>
+                                    <span class="nama">${item.nama}</span>
+                                    <span class="waktu-kecil">🕐 ${waktuPanggil}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                container.innerHTML = html;
+            });
+
+            const searchInfo = document.getElementById('searchInfo');
+            if (query) {
+                searchInfo.textContent = `${totalHasilPencarian} hasil`;
+                searchInfo.style.color = '#4338ca';
+            } else {
+                searchInfo.textContent = '0 hasil';
+                searchInfo.style.color = '#94a3b8';
+            }
+
+            const clearBtn = document.getElementById('clearSearch');
+            if (query.length > 0) {
+                clearBtn.classList.add('visible');
+            } else {
+                clearBtn.classList.remove('visible');
+            }
+        }
+
+        // ============================================================
+        // 6. SEARCH
+        // ============================================================
+        function handleSearch(e) {
+            searchQuery = e.target.value;
+            if (allDataSnapshot) {
+                renderSemua(allDataSnapshot);
+            }
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            if (allDataSnapshot) {
+                renderSemua(allDataSnapshot);
+            }
+            document.getElementById('searchInput').focus();
+        }
+
+        // ============================================================
+        // 7. MODAL
+        // ============================================================
+        function bukaModal() {
+            document.getElementById('modalDaftar').classList.add('active');
+            document.getElementById('formModal').reset();
+            document.getElementById('modalNotif').textContent = '';
+        }
+
+        function tutupModal() {
+            document.getElementById('modalDaftar').classList.remove('active');
+        }
+
+        document.getElementById('modalDaftar').addEventListener('click', function(e) {
+            if (e.target === this) tutupModal();
+        });
+
+        document.getElementById('formModal').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nomor = document.getElementById('modalNomor').value.trim();
+            const nama = document.getElementById('modalNama').value.trim();
+            const klaster = document.getElementById('modalKlaster').value;
+            const notif = document.getElementById('modalNotif');
+            const btn = document.getElementById('btnSimpanModal');
+
+            if (!nomor || !nama || !klaster) {
+                showToast('⚠️ Semua field harus diisi!', 'warning');
+                notif.style.color = 'red';
+                notif.textContent = '⚠️ Semua field harus diisi!';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+            notif.textContent = '';
+
+            try {
+                const snapshot = await database.ref('antrians').orderByChild('nomor_antrian').equalTo(nomor).once('value');
+                if (snapshot.exists()) {
+                    showToast(`⚠️ Nomor ${nomor} sudah terdaftar!`, 'warning');
+                    notif.style.color = 'orange';
+                    notif.textContent = '⚠️ Nomor antrian sudah terdaftar!';
+                    btn.disabled = false;
+                    btn.textContent = '💾 Simpan Antrian';
+                    return;
+                }
+
+                await database.ref('antrians').push().set({
+                    nomor_antrian: nomor,
+                    nama_pasien: nama,
+                    klaster: klaster,
+                    status: 'waiting',
+                    waktu_daftar: Date.now()
+                });
+
+                showToast(`✅ ${nomor} - ${nama} berhasil ditambahkan ke antrian!`, 'success');
+
+                notif.style.color = 'green';
+                notif.textContent = `✅ Berhasil! ${nomor} - ${nama} ditambahkan.`;
+                document.getElementById('formModal').reset();
+                
+                setTimeout(() => tutupModal(), 1200);
+
+            } catch (error) {
+                showToast(`❌ Gagal menyimpan: ${error.message}`, 'error');
+                notif.style.color = 'red';
+                notif.textContent = '❌ Gagal: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Simpan Antrian';
+            }
+        });
+
+        // ============================================================
+        // 8. LISTEN FIREBASE & SEARCH EVENTS
+        // ============================================================
+        database.ref('antrians').on('value', (snapshot) => {
+            renderSemua(snapshot);
+        });
+
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                handleSearch(e);
+            }, 200);
+        });
+
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                resetSearch();
+            }
+        });
+
+        // ============================================================
+        // 9. UPDATE TANGGAL
+        // ============================================================
+        function updateTanggal() {
+            const el = document.getElementById('tanggalSekarang');
+            if (!el) return;
+            try {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateString = now.toLocaleDateString('id-ID', options);
+                el.textContent = `📅 ${dateString}`;
+            } catch (e) {
+                el.textContent = '📅 Memuat tanggal...';
+            }
+        }
+        updateTanggal();
+
+        console.log('🏢 Command Center (3 Klaster) siap!');
+    </script>
+</body>
+</html>
