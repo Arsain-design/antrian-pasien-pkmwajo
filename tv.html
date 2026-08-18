@@ -61,15 +61,14 @@
         .tv-card.k3 { border-bottom: 6px solid #34d399; box-shadow: 0 20px 60px -10px rgba(52,211,153,0.15), inset 0 -2px 20px rgba(52,211,153,0.05); }
         .tv-card.k4 { border-bottom: 6px solid #fbbf24; box-shadow: 0 20px 60px -10px rgba(251,191,36,0.15), inset 0 -2px 20px rgba(251,191,36,0.05); }
 
-        /* ===== LOGO PUSKESMAS DI TENGAH ATAS PANEL ===== */
         .panel-logo {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 28px; /* JARAK LEBIH LONGGAR */
+            margin-bottom: 28px;
         }
         .panel-logo img {
-            width: 100px; /* DIPERBESAR SIGNIFIKAN */
+            width: 100px;
             height: 100px;
             border-radius: 50%;
             object-fit: cover;
@@ -492,6 +491,64 @@
         const queueSuara = [];
         let sedangBerbicara = false;
 
+        // ============================================================
+        // FUNGSI FORMAT NOMOR ANTRIAN UNTUK VOICE AI
+        // ============================================================
+        function formatNomorAntrian(nomor) {
+            if (!nomor) return '';
+
+            // Pisahkan bagian huruf dan angka (contoh: "K2-001" -> ["K2", "001"])
+            const parts = nomor.split('-');
+            if (parts.length !== 2) return nomor; // jika format tidak sesuai
+
+            const kode = parts[0]; // misal "K2" atau "K10"
+            const angka = parts[1]; // misal "001" atau "010"
+
+            // Pisahkan huruf dan angka pada kode (misal "K2" -> ["K", "2"])
+            const hurufMatch = kode.match(/^([A-Z]+)(\d+)$/);
+            if (!hurufMatch) return nomor;
+
+            const huruf = hurufMatch[1]; // "K"
+            const nomorKlaster = hurufMatch[2]; // "2" atau "10"
+
+            // Ubah huruf menjadi kata (misal "K" -> "K")
+            // Untuk klaster, kita bisa sebut "K" saja, lalu nomor klaster per digit
+            const hurufUcap = huruf; // tetap "K"
+
+            // Ubah nomor klaster per digit (contoh "2" -> "dua", "10" -> "satu nol")
+            const digitMap = {
+                '0': 'nol',
+                '1': 'satu',
+                '2': 'dua',
+                '3': 'tiga',
+                '4': 'empat',
+                '5': 'lima',
+                '6': 'enam',
+                '7': 'tujuh',
+                '8': 'delapan',
+                '9': 'sembilan'
+            };
+            const nomorKlasterUcap = nomorKlaster.split('').map(d => digitMap[d] || d).join(' ');
+
+            // Ubah angka antrian per digit (contoh "001" -> "nol nol satu")
+            const angkaUcap = angka.split('').map(d => digitMap[d] || d).join(' ');
+
+            // Gabungkan: "K dua nol nol satu" (untuk "K2-001")
+            return `${hurufUcap} ${nomorKlasterUcap} ${angkaUcap}`;
+        }
+
+        // ============================================================
+        // FUNGSI NORMALISASI NAMA (HANYA UNTUK NAMA, TIDAK MENGEJA)
+        // ============================================================
+        function normalizeNama(nama) {
+            if (!nama) return '';
+            // Hanya ubah ke huruf kecil dan hapus karakter aneh, tapi tetap utuh
+            return nama.toLowerCase().trim();
+        }
+
+        // ============================================================
+        // FUNGSI VOICE AI
+        // ============================================================
         function pilihSuaraTerbaik() {
             if (!synth) return null;
             const voices = synth.getVoices();
@@ -510,7 +567,9 @@
         function aktifkanSuara() {
             if (!synth) { document.getElementById('status-suara').textContent = '❌ Browser tidak mendukung.'; return; }
             const testUcap = new SpeechSynthesisUtterance('Selamat datang di sistem antrian. Suara telah aktif.');
-            testUcap.lang = 'id-ID'; testUcap.rate = 0.9; testUcap.pitch = 1.05;
+            testUcap.lang = 'id-ID';
+            testUcap.rate = 0.9;
+            testUcap.pitch = 1.05;
             if (suaraTerpilih) testUcap.voice = suaraTerpilih;
             synth.speak(testUcap);
             suaraDiizinkan = true;
@@ -534,15 +593,30 @@
             const item = queueSuara.shift();
             updateIndikatorAntrean();
             const { nomor, nama, klaster } = item;
+
+            // ===== FORMAT NOMOR (SERAGAM UNTUK SEMUA KLASTER) =====
+            const nomorFormatted = formatNomorAntrian(nomor);
+
+            // ===== NAMA TETAP UTUH (HANYA DINORMALISASI KECIL) =====
+            const namaNormal = normalizeNama(nama);
+
             const mapKlasterFormal = {
                 'K2': 'Klaster dua, Pelayanan Anak dan Remaja',
                 'K3': 'Klaster tiga, Pelayanan Usia Dewasa',
                 'K4': 'Klaster tiga, Pelayanan Usia Lanjut'
             };
-            const teks = `Nomor antrian ${nomor}, atas nama ${nama}, dipersilakan menuju ${mapKlasterFormal[klaster] || klaster}.`;
+            const klasterNormal = mapKlasterFormal[klaster] || klaster;
+
+            // ===== TEKS DENGAN NOMOR TERFORMAT & NAMA UTUH =====
+            const teks = `Nomor antrian ${nomorFormatted}, atas nama ${namaNormal}, dipersilakan menuju ${klasterNormal}.`;
+
             const utterance = new SpeechSynthesisUtterance(teks);
-            utterance.lang = 'id-ID'; utterance.rate = 0.9; utterance.pitch = 1.05; utterance.volume = 1;
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.85; // Sedikit lebih lambat untuk kejelasan
+            utterance.pitch = 1.0;
+            utterance.volume = 1;
             if (suaraTerpilih) utterance.voice = suaraTerpilih;
+
             sedangBerbicara = true;
             utterance.onend = () => { sedangBerbicara = false; prosesAntreanSuara(); };
             utterance.onerror = () => { sedangBerbicara = false; prosesAntreanSuara(); };
@@ -556,6 +630,9 @@
             prosesAntreanSuara();
         }
 
+        // ============================================================
+        // LOGIKA TV
+        // ============================================================
         let cachePanggilan = { K2: null, K3: null, K4: null };
 
         function updateTV(snapshot) {
@@ -654,7 +731,7 @@
             updateTV(snapshot);
         });
 
-        console.log('📺 TV dengan logo besar & jarak lega siap!');
+        console.log('📺 TV dengan Voice AI seragam untuk semua klaster siap!');
     </script>
 </body>
 </html>
