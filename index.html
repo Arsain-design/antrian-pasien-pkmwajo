@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Pusat - Sistem Antrian Pasien</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+    </script>
     <style>
         /* ============================================
            GAYA KHUSUS UNTUK DASHBOARD UTAMA (READ-ONLY)
            ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: #eef2ff;
             background-image: radial-gradient(ellipse at 10% 20%, rgba(79, 70, 229, 0.12) 0%, transparent 50%),
-                              radial-gradient(ellipse at 90% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
-                              linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                radial-gradient(ellipse at 90% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             padding: 20px;
             align-items: flex-start;
             min-height: 100vh;
@@ -112,7 +120,7 @@
             border-radius: 60px;
             font-weight: 700;
             font-size: 0.95rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
             border: 1px solid #e2e8f0;
         }
         .stat-item span {
@@ -149,6 +157,29 @@
             margin-right: 6px;
         }
 
+        /* ===== TOMBOL KELOLA DOKTER ===== */
+        .btn-kelola-dokter {
+            width: auto;
+            padding: 12px 28px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(13, 148, 136, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-kelola-dokter:hover {
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 12px 28px -8px rgba(13, 148, 136, 0.5);
+        }
+        .btn-kelola-dokter i {
+            margin-right: 6px;
+        }
+
+        /* ===== TOMBOL RESET SEMUA (diperbarui) ===== */
         .btn-reset-semua {
             width: auto;
             padding: 12px 24px;
@@ -222,7 +253,7 @@
             color: #1e293b;
             text-decoration: none;
             transition: all 0.25s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             cursor: pointer;
             white-space: nowrap;
         }
@@ -237,10 +268,18 @@
             transform: scale(0.96);
         }
 
-        .quick-btn.k2 { border-left: 3px solid #38bdf8; }
-        .quick-btn.k3 { border-left: 3px solid #34d399; }
-        .quick-btn.k4 { border-left: 3px solid #fbbf24; }
-        .quick-btn.tv { border-left: 3px solid #a78bfa; }
+        .quick-btn.k2 {
+            border-left: 3px solid #38bdf8;
+        }
+        .quick-btn.k3 {
+            border-left: 3px solid #34d399;
+        }
+        .quick-btn.k4 {
+            border-left: 3px solid #fbbf24;
+        }
+        .quick-btn.tv {
+            border-left: 3px solid #a78bfa;
+        }
 
         .quick-btn .icon {
             font-size: 1rem;
@@ -331,7 +370,7 @@
             text-align: right;
         }
 
-        /* ===== GRID 3 KOLOM (tanpa K5) ===== */
+        /* ===== GRID 3 KOLOM ===== */
         .grid-klaster {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -394,9 +433,40 @@
             letter-spacing: 0.5px;
             white-space: nowrap;
         }
-        .badge-k2 { background: #38bdf8; }
-        .badge-k3 { background: #34d399; }
-        .badge-k4 { background: #fbbf24; color: #1e293b; }
+        .badge-k2 {
+            background: #38bdf8;
+        }
+        .badge-k3 {
+            background: #34d399;
+        }
+        .badge-k4 {
+            background: #fbbf24;
+            color: #1e293b;
+        }
+
+        /* ===== DOKTER TAG DI PANEL ===== */
+        .dokter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 4px 12px 4px 8px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 4px;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dokter-tag i {
+            font-size: 0.7rem;
+            color: #0d9488;
+        }
 
         .btn-reset-klaster {
             background: rgba(239, 68, 68, 0.08);
@@ -479,7 +549,7 @@
         .card-antrian-panel:hover {
             background: white;
             transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         }
         .card-antrian-panel .info {
             display: flex;
@@ -541,22 +611,44 @@
         .modal-overlay.active {
             display: flex;
         }
+
         .modal-content {
             background: white;
             padding: 40px;
             border-radius: 48px;
             max-width: 560px;
             width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.3);
             animation: modalIn 0.3s ease;
         }
-        @keyframes modalIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .modal-content.dokter-modal {
+            max-width: 600px;
         }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         .modal-content h2 {
             font-size: 1.8rem;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .modal-content .subtitle-modal {
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
         }
         .modal-content .close-modal {
             float: right;
@@ -568,14 +660,132 @@
             width: auto;
             padding: 0 8px;
             box-shadow: none;
+            transition: all 0.3s ease;
         }
         .modal-content .close-modal:hover {
             transform: rotate(90deg);
             color: #1e293b;
         }
+
         .modal-content .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
+        .modal-content .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* ===== SELECT MODERN ===== */
+        .select-modern {
+            width: 100%;
+            padding: 14px 18px;
+            padding-right: 44px;
+            border-radius: 16px;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #1e293b;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.25s ease;
+            font-family: 'Inter', sans-serif;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 14px;
+        }
+        .select-modern:hover {
+            border-color: #cbd5e1;
+        }
+        .select-modern:focus {
+            border-color: #0d9488;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+        }
+        .select-modern option {
+            padding: 8px;
+        }
+
+        /* ===== TOMBOL ATUR DOKTER ===== */
+        .btn-assign-dokter {
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(13, 148, 136, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-assign-dokter:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 12px 28px -8px rgba(13, 148, 136, 0.5);
+        }
+
+        /* ===== RINGKASAN PENUGASAN ===== */
+        .assignment-summary {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1.5px solid #f1f5f9;
+        }
+        .assignment-summary .summary-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .assignment-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            border: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+        .assignment-item .cluster-badge {
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .cluster-badge.k2 {
+            background: #38bdf8;
+        }
+        .cluster-badge.k3 {
+            background: #34d399;
+        }
+        .cluster-badge.k4 {
+            background: #fbbf24;
+        }
+        .assignment-item .dokter-name {
+            font-weight: 600;
+            color: #1e293b;
+            flex: 1;
+        }
+        .assignment-item .empty-text {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
         .modal-content .btn-simpan-modal {
             background: linear-gradient(135deg, #4338ca, #6366f1);
             width: 100%;
@@ -590,6 +800,32 @@
         }
         .modal-content .btn-simpan-modal:hover {
             transform: scale(1.02);
+        }
+
+        .modal-footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .btn-batal-modal {
+            padding: 12px 28px;
+            border-radius: 60px;
+            background: transparent;
+            color: #64748b;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        .btn-batal-modal:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
         }
 
         /* ===== TOAST ===== */
@@ -613,17 +849,17 @@
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border-radius: 20px;
             padding: 16px 20px;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.5);
             display: flex;
             align-items: center;
             gap: 14px;
             transform: translateX(calc(100% + 40px));
             opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), 
-                        opacity 0.4s ease,
-                        margin 0.3s ease;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                margin 0.3s ease;
             border-left: 6px solid #6366f1;
         }
 
@@ -660,14 +896,30 @@
             color: #1e293b;
             transform: scale(1.2);
         }
-        .toast-item.success { border-left-color: #10b981; }
-        .toast-item.success .toast-body { color: #065f46; }
-        .toast-item.error { border-left-color: #ef4444; }
-        .toast-item.error .toast-body { color: #991b1b; }
-        .toast-item.warning { border-left-color: #f59e0b; }
-        .toast-item.warning .toast-body { color: #92400e; }
-        .toast-item.info { border-left-color: #3b82f6; }
-        .toast-item.info .toast-body { color: #1e40af; }
+        .toast-item.success {
+            border-left-color: #10b981;
+        }
+        .toast-item.success .toast-body {
+            color: #065f46;
+        }
+        .toast-item.error {
+            border-left-color: #ef4444;
+        }
+        .toast-item.error .toast-body {
+            color: #991b1b;
+        }
+        .toast-item.warning {
+            border-left-color: #f59e0b;
+        }
+        .toast-item.warning .toast-body {
+            color: #92400e;
+        }
+        .toast-item.info {
+            border-left-color: #3b82f6;
+        }
+        .toast-item.info .toast-body {
+            color: #1e40af;
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1200px) {
@@ -691,6 +943,10 @@
                 flex: 1 1 auto;
                 width: 100%;
                 min-width: unset;
+            }
+            .modal-content.dokter-modal {
+                max-width: 96%;
+                padding: 24px 16px;
             }
         }
         @media (max-width: 768px) {
@@ -719,11 +975,14 @@
                 justify-content: center;
                 width: 100%;
             }
-            .btn-reset-semua, .btn-tambah-pasien {
+            .btn-reset-semua,
+            .btn-tambah-pasien,
+            .btn-kelola-dokter {
                 flex: 1;
                 justify-content: center;
                 padding: 10px 16px;
                 font-size: 0.85rem;
+                min-width: 100px;
             }
             .quick-access .label-qs {
                 width: 100%;
@@ -764,6 +1023,13 @@
                 font-size: 0.6rem;
                 padding: 2px 8px;
             }
+            .modal-content h2 {
+                font-size: 1.3rem;
+            }
+            .select-modern {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
         }
         @media (max-width: 480px) {
             .panel-header .panel-title-group {
@@ -779,8 +1045,16 @@
                 font-size: 0.75rem;
                 padding: 2px 6px;
             }
-            .btn-reset-semua, .btn-tambah-pasien {
+            .btn-reset-semua,
+            .btn-tambah-pasien,
+            .btn-kelola-dokter {
                 font-size: 0.75rem;
+                padding: 8px 12px;
+                min-width: 70px;
+            }
+            .assignment-item {
+                flex-wrap: wrap;
+                gap: 6px;
                 padding: 8px 12px;
             }
         }
@@ -788,7 +1062,7 @@
 </head>
 <body>
     <div class="dashboard-utama">
-        
+
         <!-- ===== HEADER ===== -->
         <header class="header-utama">
             <div class="header-left">
@@ -807,8 +1081,9 @@
                     <div class="stat-item"><i class="fas fa-users"></i> Total Menunggu: <span id="totalWaiting">0</span></div>
                     <div class="stat-item"><i class="fas fa-phone"></i> Total Dipanggil: <span id="totalCalled">0</span></div>
                 </div>
-                <button class="btn-tambah-pasien" onclick="bukaModal()"><i class="fas fa-plus"></i> Tambah Pasien</button>
                 <button class="btn-reset-semua" onclick="resetAllKlaster()"><i class="fas fa-trash-alt"></i> Reset Semua</button>
+                <button class="btn-kelola-dokter" onclick="bukaModalDokter()"><i class="fas fa-user-md"></i> Kelola Dokter</button>
+                <button class="btn-tambah-pasien" onclick="bukaModal()"><i class="fas fa-plus"></i> Tambah Pasien</button>
             </div>
         </header>
 
@@ -823,7 +1098,8 @@
                     <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Dewasa)
                 </a>
                 <a href="dashboard-k4.html" class="quick-btn k4" target="_blank">
-                    <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Lansia)
+                    <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Usia 
+                    lanjut)
                 </a>
                 <a href="tv.html" class="quick-btn tv" target="_blank">
                     <span class="icon"><i class="fas fa-tv"></i></span> Tampilan TV
@@ -847,7 +1123,10 @@
                         <h2><i class="fas fa-child" style="color:#38bdf8;"></i> Klaster 2</h2>
                         <span class="badge-klaster badge-k2">Anak & Remaja</span>
                     </div>
-                    <button class="btn-reset-klaster" onclick="resetKlaster('K2')"><i class="fas fa-trash-alt"></i> Reset</button>
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; width:100%;">
+                        <span class="dokter-tag" id="dokterK2"><i class="fas fa-user-md"></i> <span id="dokterNamaK2">Belum ditentukan</span></span>
+                        <button class="btn-reset-klaster" onclick="resetKlaster('K2')"><i class="fas fa-trash-alt"></i> Reset</button>
+                    </div>
                 </div>
                 <div class="panel-body" id="bodyK2"></div>
             </div>
@@ -859,7 +1138,10 @@
                         <h2><i class="fas fa-user" style="color:#34d399;"></i> Klaster 3</h2>
                         <span class="badge-klaster badge-k3">Usia Dewasa</span>
                     </div>
-                    <button class="btn-reset-klaster" onclick="resetKlaster('K3')"><i class="fas fa-trash-alt"></i> Reset</button>
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; width:100%;">
+                        <span class="dokter-tag" id="dokterK3"><i class="fas fa-user-md"></i> <span id="dokterNamaK3">Belum ditentukan</span></span>
+                        <button class="btn-reset-klaster" onclick="resetKlaster('K3')"><i class="fas fa-trash-alt"></i> Reset</button>
+                    </div>
                 </div>
                 <div class="panel-body" id="bodyK3"></div>
             </div>
@@ -871,20 +1153,23 @@
                         <h2><i class="fas fa-user" style="color:#fbbf24;"></i> Klaster 3</h2>
                         <span class="badge-klaster badge-k4">Usia Lanjut</span>
                     </div>
-                    <button class="btn-reset-klaster" onclick="resetKlaster('K4')"><i class="fas fa-trash-alt"></i> Reset</button>
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; width:100%;">
+                        <span class="dokter-tag" id="dokterK4"><i class="fas fa-user-md"></i> <span id="dokterNamaK4">Belum ditentukan</span></span>
+                        <button class="btn-reset-klaster" onclick="resetKlaster('K4')"><i class="fas fa-trash-alt"></i> Reset</button>
+                    </div>
                 </div>
                 <div class="panel-body" id="bodyK4"></div>
             </div>
         </div>
     </div>
 
-    <!-- ===== MODAL ===== -->
+    <!-- ===== MODAL TAMBAH PASIEN ===== -->
     <div class="modal-overlay" id="modalDaftar">
         <div class="modal-content">
             <button class="close-modal" onclick="tutupModal()"><i class="fas fa-times"></i></button>
             <h2><i class="fas fa-file-medical" style="color:#4338ca; margin-right:10px;"></i> Daftar Pasien Baru</h2>
             <p style="color: #64748b; margin-bottom: 20px;">Input data pasien untuk ditambahkan ke antrian</p>
-            
+
             <form id="formModal">
                 <div class="form-group">
                     <label><i class="fas fa-hashtag"></i> Nomor Antrian</label>
@@ -906,6 +1191,49 @@
                 <button type="submit" class="btn-simpan-modal" id="btnSimpanModal"><i class="fas fa-save"></i> Simpan Antrian</button>
                 <div id="modalNotif" style="margin-top:12px; font-weight:500; color:#4338ca; text-align:center;"></div>
             </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL KELOLA DOKTER (2 SELECT BOX) ===== -->
+    <div class="modal-overlay" id="modalDokter">
+        <div class="modal-content dokter-modal">
+            <button class="close-modal" onclick="tutupModalDokter()"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-user-md" style="color:#0d9488; margin-right:10px;"></i> Kelola Dokter</h2>
+            <p class="subtitle-modal">Pilih dokter dan tetapkan klaster tujuannya.</p>
+
+            <div class="form-group">
+                <label for="selectDokter">👨‍⚕️ Pilih Dokter</label>
+                <select id="selectDokter" class="select-modern">
+                    <option value="">-- Pilih Dokter --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="selectKlaster">📋 Pilih Klaster Tujuan</label>
+                <select id="selectKlaster" class="select-modern">
+                    <option value="">-- Pilih Klaster --</option>
+                    <option value="K2">K2 - Anak & Remaja</option>
+                    <option value="K3">K3 - Usia Dewasa</option>
+                    <option value="K4">K3 - Usia Lanjut</option>
+                </select>
+            </div>
+
+            <button class="btn-assign-dokter" id="btnAssignDokter">
+                <i class="fas fa-user-check"></i> Atur Dokter
+            </button>
+
+            <div class="assignment-summary" id="assignmentSummary">
+                <div class="summary-title"><i class="fas fa-list-ul"></i> Ringkasan Penugasan</div>
+                <div id="summaryList">
+                    <div class="assignment-item"><span class="empty-text">Belum ada data.</span></div>
+                </div>
+            </div>
+
+            <div id="modalDokterNotif" style="margin-top:16px; font-weight:500; color:#0d9488; text-align:center;"></div>
+
+            <div class="modal-footer-actions" style="border-top: none; margin-top: 8px;">
+                <button class="btn-batal-modal" onclick="tutupModalDokter()">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -933,12 +1261,12 @@
             const toast = document.createElement('div');
             toast.className = `toast-item ${type}`;
             toast.style.borderLeftColor = chosen.borderColor;
-            
+
             toast.innerHTML = `
-                <span class="toast-icon">${chosen.icon}</span>
-                <span class="toast-body">${message}</span>
-                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-            `;
+                        <span class="toast-icon">${chosen.icon}</span>
+                        <span class="toast-body">${message}</span>
+                        <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                    `;
 
             container.appendChild(toast);
             requestAnimationFrame(() => {
@@ -960,17 +1288,17 @@
         }
 
         // ============================================================
-        // 2. RESET SEMUA ANTRIAN
+        // 2. RESET SEMUA ANTRIAN + DOKTER (DIPERBARUI)
         // ============================================================
         async function resetAllKlaster() {
-            const confirmFirst = confirm(`⚠️ PERINGATAN BESAR!\n\nAnda akan menghapus SEMUA data antrian dari SEMUA KLASTER (K2, K3, K4).\n\nData yang dihapus TIDAK DAPAT DIKEMBALIKAN.\n\nApakah Anda yakin ingin melanjutkan?`);
+            const confirmFirst = confirm(`⚠️ PERINGATAN BESAR!\n\nAnda akan menghapus SEMUA data:\n- Antrian pasien (SEMUA KLASTER)\n- Data dokter (penugasan)\n\nData yang dihapus TIDAK DAPAT DIKEMBALIKAN.\n\nApakah Anda yakin ingin melanjutkan?`);
             if (!confirmFirst) {
                 showToast('Reset dibatalkan.', 'info');
                 return;
             }
 
-            const userInput = prompt(`🔒 KONFIRMASI AKHIR\n\nKetik "RESET SEMUA" (huruf besar) untuk menghapus SELURUH data antrian di semua klaster:\n\nKetik "BATAL" untuk membatalkan.`);
-            
+            const userInput = prompt(`🔒 KONFIRMASI AKHIR\n\nKetik "RESET SEMUA" untuk menghapus SELURUH data antrian dan data dokter.\n\nKetik "BATAL" untuk membatalkan.`);
+
             if (userInput === null) {
                 showToast('Reset dibatalkan.', 'info');
                 return;
@@ -982,31 +1310,36 @@
             }
 
             try {
-                const snapshot = await database.ref('antrians').once('value');
-                
-                if (!snapshot.exists()) {
-                    showToast('📭 Tidak ada data antrian untuk di-reset.', 'info');
-                    return;
+                // 1. Hapus semua antrian
+                const snapshotAntrian = await database.ref('antrians').once('value');
+                if (snapshotAntrian.exists()) {
+                    const updatesAntrian = {};
+                    snapshotAntrian.forEach((child) => {
+                        updatesAntrian[child.key] = null;
+                    });
+                    await database.ref('antrians').update(updatesAntrian);
                 }
 
-                const updates = {};
-                snapshot.forEach((child) => {
-                    updates[child.key] = null;
+                // 2. Hapus semua data dokter assignments
+                await database.ref('dokter_assignments').set(null);
+
+                showToast('✅ SEMUA data antrian dan data dokter berhasil di-reset!', 'success');
+                console.log('🔄 Semua data antrian dan dokter berhasil direset.');
+
+                // Update UI tags dokter menjadi "Belum ditentukan"
+                ['K2', 'K3', 'K4'].forEach(k => {
+                    const el = document.getElementById(`dokterNama${k}`);
+                    if (el) el.textContent = 'Belum ditentukan';
                 });
 
-                await database.ref('antrians').update(updates);
-                
-                showToast('✅ SEMUA data antrian berhasil di-reset!', 'success');
-                console.log('🔄 Semua data antrian berhasil direset.');
-
             } catch (error) {
-                showToast(`❌ Gagal mereset semua antrian: ${error.message}`, 'error');
+                showToast(`❌ Gagal mereset semua data: ${error.message}`, 'error');
                 console.error('Error reset all:', error);
             }
         }
 
         // ============================================================
-        // 3. RESET PER KLASTER
+        // 3. RESET PER KLASTER (hanya antrian)
         // ============================================================
         async function resetKlaster(klaster) {
             const namaKlaster = {
@@ -1022,7 +1355,7 @@
             }
 
             const userInput = prompt(`🔒 KONFIRMASI AKHIR\n\nKetik "${klaster}" untuk menghapus semua antrian di ${namaKlaster[klaster]}:\n(Ketik "BATAL" untuk membatalkan)`);
-            
+
             if (userInput === null) {
                 showToast('Reset dibatalkan.', 'info');
                 return;
@@ -1035,7 +1368,7 @@
 
             try {
                 const snapshot = await database.ref('antrians').orderByChild('klaster').equalTo(klaster).once('value');
-                
+
                 if (!snapshot.exists()) {
                     showToast(`📭 Tidak ada data di ${namaKlaster[klaster]} untuk di-reset.`, 'info');
                     return;
@@ -1047,7 +1380,7 @@
                 });
 
                 await database.ref('antrians').update(updates);
-                
+
                 showToast(`✅ ${namaKlaster[klaster]} berhasil di-reset!`, 'success');
                 console.log(`🔄 Data klaster ${klaster} berhasil direset.`);
 
@@ -1058,7 +1391,7 @@
         }
 
         // ============================================================
-        // 4. VARIABEL GLOBAL (hanya K2, K3, K4)
+        // 4. VARIABEL GLOBAL
         // ============================================================
         const panelIds = ['K2', 'K3', 'K4'];
         let searchQuery = '';
@@ -1077,7 +1410,7 @@
             let totalWaitingGlobal = 0;
             let totalCalledGlobal = 0;
 
-            let dataKlaster = { 
+            let dataKlaster = {
                 K2: { waiting: [], called: [] },
                 K3: { waiting: [], called: [] },
                 K4: { waiting: [], called: [] }
@@ -1114,21 +1447,21 @@
 
             panelIds.forEach(k => {
                 const container = document.getElementById(`body${k}`);
-                
+
                 const waitingList = dataKlaster[k].waiting
                     .sort((a, b) => a.nomor.localeCompare(b.nomor))
                     .filter(item => {
                         if (!query) return true;
-                        return item.nomor.toLowerCase().includes(query) || 
-                               item.nama.toLowerCase().includes(query);
+                        return item.nomor.toLowerCase().includes(query) ||
+                            item.nama.toLowerCase().includes(query);
                     });
 
                 const calledList = dataKlaster[k].called
                     .sort((a, b) => b.waktu_panggil - a.waktu_panggil)
                     .filter(item => {
                         if (!query) return true;
-                        return item.nomor.toLowerCase().includes(query) || 
-                               item.nama.toLowerCase().includes(query);
+                        return item.nomor.toLowerCase().includes(query) ||
+                            item.nama.toLowerCase().includes(query);
                     });
 
                 totalHasilPencarian += waitingList.length + calledList.length;
@@ -1137,48 +1470,50 @@
 
                 // SECTION WAITING
                 html += `<div class="sub-section">
-                            <div class="label-section">
-                                <span>⏳ Menunggu</span>
-                                <span class="count-badge">${waitingList.length}</span>
-                            </div>`;
+                                <div class="label-section">
+                                    <span>⏳ Menunggu</span>
+                                    <span class="count-badge">${waitingList.length}</span>
+                                </div>`;
                 if (waitingList.length === 0) {
                     html += `<div class="empty-state">${query ? 'Tidak ada yang cocok' : 'Tidak ada antrian menunggu'}</div>`;
                 } else {
                     waitingList.forEach(item => {
-                        const waktuDaftar = item.waktu_daftar ? new Date(item.waktu_daftar).toLocaleTimeString() : '';
+                        const waktuDaftar = item.waktu_daftar ? new Date(item.waktu_daftar).toLocaleTimeString() :
+                            '';
                         html += `
-                            <div class="card-antrian-panel">
-                                <div class="info">
-                                    <strong>${item.nomor}</strong>
-                                    <span class="nama">${item.nama}</span>
-                                    <span class="waktu-kecil"><i class="far fa-clock"></i> ${waktuDaftar}</span>
-                                </div>
-                            </div>
-                        `;
+                                    <div class="card-antrian-panel">
+                                        <div class="info">
+                                            <strong>${item.nomor}</strong>
+                                            <span class="nama">${item.nama}</span>
+                                            <span class="waktu-kecil"><i class="far fa-clock"></i> ${waktuDaftar}</span>
+                                        </div>
+                                    </div>
+                                `;
                     });
                 }
                 html += `</div>`;
 
                 // SECTION CALLED
                 html += `<div class="sub-section">
-                            <div class="label-section">
-                                <span>📢 Sudah Dipanggil</span>
-                                <span class="count-badge">${calledList.length}</span>
-                            </div>`;
+                                <div class="label-section">
+                                    <span>📢 Sudah Dipanggil</span>
+                                    <span class="count-badge">${calledList.length}</span>
+                                </div>`;
                 if (calledList.length === 0) {
                     html += `<div class="empty-state">${query ? 'Tidak ada yang cocok' : 'Belum ada panggilan'}</div>`;
                 } else {
                     calledList.forEach(item => {
-                        const waktuPanggil = item.waktu_panggil ? new Date(item.waktu_panggil).toLocaleTimeString() : '';
+                        const waktuPanggil = item.waktu_panggil ? new Date(item.waktu_panggil).toLocaleTimeString() :
+                            '';
                         html += `
-                            <div class="card-antrian-panel called-status">
-                                <div class="info">
-                                    <strong>${item.nomor}</strong>
-                                    <span class="nama">${item.nama}</span>
-                                    <span class="waktu-kecil">🕐 ${waktuPanggil}</span>
-                                </div>
-                            </div>
-                        `;
+                                    <div class="card-antrian-panel called-status">
+                                        <div class="info">
+                                            <strong>${item.nomor}</strong>
+                                            <span class="nama">${item.nama}</span>
+                                            <span class="waktu-kecil">🕐 ${waktuPanggil}</span>
+                                        </div>
+                                    </div>
+                                `;
                     });
                 }
                 html += `</div>`;
@@ -1223,7 +1558,7 @@
         }
 
         // ============================================================
-        // 7. MODAL
+        // 7. MODAL TAMBAH PASIEN
         // ============================================================
         function bukaModal() {
             document.getElementById('modalDaftar').classList.add('active');
@@ -1259,7 +1594,8 @@
             notif.textContent = '';
 
             try {
-                const snapshot = await database.ref('antrians').orderByChild('nomor_antrian').equalTo(nomor).once('value');
+                const snapshot = await database.ref('antrians').orderByChild('nomor_antrian').equalTo(nomor).once(
+                    'value');
                 if (snapshot.exists()) {
                     showToast(`⚠️ Nomor ${nomor} sudah terdaftar!`, 'warning');
                     notif.style.color = 'orange';
@@ -1282,7 +1618,7 @@
                 notif.style.color = 'green';
                 notif.textContent = `✅ Berhasil! ${nomor} - ${nama} ditambahkan.`;
                 document.getElementById('formModal').reset();
-                
+
                 setTimeout(() => tutupModal(), 1200);
 
             } catch (error) {
@@ -1296,28 +1632,199 @@
         });
 
         // ============================================================
-        // 8. LISTEN FIREBASE & SEARCH EVENTS
+        // 8. MODAL KELOLA DOKTER (2 SELECT BOX) - STRUKTUR DATA BARU
+        // ============================================================
+        const DAFTAR_DOKTER = [
+            'dr. ERNAWATY MADI',
+            'dr. UTAMI MEILANIE PUTRI',
+            'dr. NURUL ISMIRA KUSUMAWARDANI',
+            'dr. TRY YULIASTY ALWAT',
+            'dr. VERRY ASWARD SAMIUN',
+            'dr. ARMAYULANSARI',
+            'dr. WA ODE SHARLI SAERA',
+            'dr. MUHAMMAD AFDHAL QALAM HIDAYAH AMIR',
+            'dr. WA ODE NUR DIAN AL JANNA'
+        ];
+
+        // Data disimpan di Firebase dengan key = klaster (K2, K3, K4)
+        // value = nama dokter
+
+        function bukaModalDokter() {
+            document.getElementById('modalDokter').classList.add('active');
+            document.getElementById('modalDokterNotif').textContent = '';
+            document.getElementById('selectDokter').value = '';
+            document.getElementById('selectKlaster').value = '';
+            // Isi dropdown dokter
+            const selectDokter = document.getElementById('selectDokter');
+            selectDokter.innerHTML = '<option value="">-- Pilih Dokter --</option>';
+            DAFTAR_DOKTER.forEach(nama => {
+                const opt = document.createElement('option');
+                opt.value = nama;
+                opt.textContent = nama;
+                selectDokter.appendChild(opt);
+            });
+            muatRingkasan();
+        }
+
+        function tutupModalDokter() {
+            document.getElementById('modalDokter').classList.remove('active');
+        }
+
+        document.getElementById('modalDokter').addEventListener('click', function(e) {
+            if (e.target === this) tutupModalDokter();
+        });
+
+        async function muatRingkasan() {
+            try {
+                const snapshot = await database.ref('dokter_assignments').once('value');
+                const data = snapshot.val() || {};
+                // data = { K2: "dr. X", K3: "dr. Y", K4: "dr. Z" }
+                const container = document.getElementById('summaryList');
+                const klasterList = ['K2', 'K3', 'K4'];
+                const labelMap = {
+                    K2: 'K2 - Anak & Remaja',
+                    K3: 'K3 - Usia Dewasa',
+                    K4: 'K4 - Usia Lanjut'
+                };
+                const clsMap = { K2: 'k2', K3: 'k3', K4: 'k4' };
+                let html = '';
+                klasterList.forEach(k => {
+                    const dokter = data[k] || null;
+                    html += `
+                                <div class="assignment-item">
+                                    <span class="cluster-badge ${clsMap[k]}">${k}</span>
+                                    <span class="dokter-name">${dokter || '-'}</span>
+                                    ${dokter ? '' : '<span class="empty-text">Belum ditentukan</span>'}
+                                </div>
+                            `;
+                });
+                container.innerHTML = html;
+                // Update tag dokter di panel utama
+                updateDokterTags(data);
+            } catch (error) {
+                showToast('❌ Gagal memuat ringkasan: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        // Tombol Atur Dokter
+        document.getElementById('btnAssignDokter').addEventListener('click', async function() {
+            const selectDokter = document.getElementById('selectDokter');
+            const selectKlaster = document.getElementById('selectKlaster');
+            const notif = document.getElementById('modalDokterNotif');
+
+            const dokter = selectDokter.value;
+            const klaster = selectKlaster.value;
+
+            if (!dokter || !klaster) {
+                const msg = '⚠️ Harap pilih dokter dan klaster terlebih dahulu.';
+                showToast(msg, 'warning');
+                notif.style.color = 'orange';
+                notif.textContent = msg;
+                return;
+            }
+
+            // Cek apakah klaster sudah terisi oleh dokter lain
+            let existing = null;
+            try {
+                const snap = await database.ref('dokter_assignments').once('value');
+                const data = snap.val() || {};
+                if (data[klaster] && data[klaster] !== dokter) {
+                    existing = data[klaster];
+                }
+            } catch (e) { /* ignore */ }
+
+            if (existing) {
+                const confirmMsg =
+                    `⚠️ Klaster ${klaster} saat ini ditugaskan ke ${existing}.\nApakah Anda yakin ingin mengganti dengan ${dokter}?`;
+                if (!confirm(confirmMsg)) {
+                    notif.style.color = 'orange';
+                    notif.textContent = '⏹️ Pembatalan oleh pengguna.';
+                    return;
+                }
+            }
+
+            // Simpan ke Firebase dengan key = klaster
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            notif.textContent = '';
+
+            try {
+                const update = {};
+                update[klaster] = dokter;
+                await database.ref('dokter_assignments').update(update);
+                showToast(`✅ ${dokter} ditugaskan ke ${klaster}`, 'success');
+                notif.style.color = 'green';
+                notif.textContent = `✅ Berhasil! ${dokter} → ${klaster}`;
+                // Refresh ringkasan
+                muatRingkasan();
+                // Reset dropdown
+                selectKlaster.value = '';
+                // selectDokter.value = ''; // biarkan agar mudah assign ulang
+            } catch (error) {
+                showToast('❌ Gagal menyimpan: ' + error.message, 'error');
+                notif.style.color = 'red';
+                notif.textContent = '❌ Gagal: ' + error.message;
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-check"></i> Atur Dokter';
+            }
+        });
+
+        // ============================================================
+        // 9. UPDATE TAG DOKTER DI PANEL UTAMA
+        // ============================================================
+        function updateDokterTags(data) {
+            // data = { K2: "dr. X", K3: "dr. Y", K4: "dr. Z" }
+            if (!data) {
+                // Ambil dari Firebase jika belum ada
+                database.ref('dokter_assignments').once('value', (snap) => {
+                    const d = snap.val() || {};
+                    updateDokterTags(d);
+                }).catch(() => {});
+                return;
+            }
+            ['K2', 'K3', 'K4'].forEach(k => {
+                const el = document.getElementById(`dokterNama${k}`);
+                if (el) {
+                    el.textContent = data[k] || 'Belum ditentukan';
+                }
+            });
+        }
+
+        // ============================================================
+        // 10. LISTEN FIREBASE
         // ============================================================
         database.ref('antrians').on('value', (snapshot) => {
             renderSemua(snapshot);
         });
 
-        let searchTimeout;
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                handleSearch(e);
-            }, 200);
-        });
-
-        document.getElementById('searchInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                resetSearch();
+        // Listen perubahan dokter assignments
+        database.ref('dokter_assignments').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            updateDokterTags(data);
+            // Jika modal terbuka, refresh ringkasan
+            if (document.getElementById('modalDokter').classList.contains('active')) {
+                muatRingkasan();
             }
         });
 
         // ============================================================
-        // 9. UPDATE TANGGAL
+        // 11. SEARCH EVENT
+        // ============================================================
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => handleSearch(e), 200);
+        });
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') resetSearch();
+        });
+
+        // ============================================================
+        // 12. TANGGAL
         // ============================================================
         function updateTanggal() {
             const el = document.getElementById('tanggalSekarang');
@@ -1325,15 +1832,22 @@
             try {
                 const now = new Date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const dateString = now.toLocaleDateString('id-ID', options);
-                el.textContent = `📅 ${dateString}`;
+                el.textContent = `📅 ${now.toLocaleDateString('id-ID', options)}`;
             } catch (e) {
                 el.textContent = '📅 Memuat tanggal...';
             }
         }
         updateTanggal();
 
-        console.log('🏢 Command Center (3 Klaster) siap!');
+        // ============================================================
+        // 13. INISIALISASI
+        // ============================================================
+        // Ambil data dokter awal
+        database.ref('dokter_assignments').once('value', (snap) => {
+            updateDokterTags(snap.val() || {});
+        });
+
+        console.log('🏢 Dashboard dengan struktur dokter baru (key = klaster) dan reset semua data siap!');
     </script>
 </body>
 </html>
