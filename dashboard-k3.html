@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Antrian K3D</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
+        /* ============================================================
+           GAYA KHUSUS UNTUK DASHBOARD KLASTER 3 (HIJAU)
+           ============================================================ */
         .tab-container {
             display: flex;
             gap: 12px;
@@ -16,7 +19,6 @@
             border-bottom: 2px solid rgba(226, 232, 240, 0.6);
             padding-bottom: 4px;
         }
-
         .tab-btn {
             width: auto;
             padding: 10px 28px;
@@ -31,15 +33,14 @@
             transition: all 0.3s ease;
             position: relative;
         }
-
-        .tab-btn::after { display: none; }
-
+        .tab-btn::after {
+            display: none;
+        }
         .tab-btn:hover {
             background: rgba(52, 211, 153, 0.05);
             transform: translateY(-2px);
             color: #1e293b;
         }
-
         .tab-btn.active {
             background: transparent;
             color: #059669;
@@ -47,10 +48,13 @@
             border-bottom: 4px solid #34d399;
             border-radius: 0;
         }
-
-        .tab-content { display: none; padding-top: 10px; }
-        .tab-content.active { display: block; }
-
+        .tab-content {
+            display: none;
+            padding-top: 10px;
+        }
+        .tab-content.active {
+            display: block;
+        }
         .badge-count {
             background: #e2e8f0;
             color: #334155;
@@ -60,12 +64,10 @@
             font-weight: 700;
             margin-left: 8px;
         }
-
         .tab-btn.active .badge-count {
             background: #a7f3d0;
             color: #065f46;
         }
-
         .btn-panggil-ulang {
             width: auto;
             padding: 12px 28px;
@@ -80,12 +82,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .btn-panggil-ulang:hover {
             transform: scale(1.06) translateY(-2px);
             box-shadow: 0 12px 24px -6px rgba(245, 158, 11, 0.5);
         }
-
         .card-antrian {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(8px);
@@ -100,7 +100,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .card-antrian::before {
             content: '';
             position: absolute;
@@ -111,42 +110,34 @@
             border-radius: 0 4px 4px 0;
             background: #34d399;
         }
-
         .card-antrian:hover {
             transform: translateX(6px);
             box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.15);
             border-color: #a7f3d0;
         }
-
         .card-antrian.called {
             opacity: 0.85;
             background: rgba(255, 255, 255, 0.5);
         }
-
         .card-antrian.called::before {
             background: #94a3b8;
         }
-
         .card-antrian .waktu-panggil {
             font-size: 0.75rem;
             color: #94a3b8;
             font-weight: 400;
             margin-left: 12px;
         }
-
-        /* ===== STYLE UNTUK WAKTU DAFTAR (WAITING) ===== */
         .card-antrian .waktu-daftar {
             font-size: 0.75rem;
             color: #94a3b8;
             font-weight: 400;
             margin-left: 12px;
         }
-
         .badge-klaster {
             background: #34d399;
             color: #064e3b;
         }
-
         .btn-panggil {
             width: auto;
             padding: 12px 28px;
@@ -161,28 +152,65 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .btn-panggil:hover {
             transform: scale(1.06) translateY(-2px);
             box-shadow: 0 12px 24px -6px rgba(16, 185, 129, 0.5);
         }
-
+        .dokter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(52, 211, 153, 0.12);
+            padding: 4px 14px 4px 10px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #064e3b;
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            margin-left: 12px;
+        }
+        .dokter-tag i {
+            font-size: 0.7rem;
+            color: #059669;
+        }
         @media (max-width: 640px) {
-            .tab-container { gap: 4px; overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
-            .tab-btn { padding: 8px 16px; font-size: 0.85rem; }
-            .btn-panggil-ulang, .btn-panggil { padding: 10px 16px; font-size: 0.8rem; }
-            .card-antrian { flex-wrap: wrap; }
+            .tab-container {
+                gap: 4px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                white-space: nowrap;
+            }
+            .tab-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            .btn-panggil-ulang,
+            .btn-panggil {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+            .card-antrian {
+                flex-wrap: wrap;
+            }
+            .dokter-tag {
+                font-size: 0.7rem;
+                padding: 2px 10px;
+                margin-left: 0;
+                margin-top: 4px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-dashboard">
-            <h1><i class="fas fa-user" style="color:#34d399;"></i> Antrian Klaster 3</h1>
-            <span class="badge-klaster">Usia Dewasa</span>
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                <h1 style="margin:0;"><i class="fas fa-user" style="color:#34d399;"></i> Antrian Klaster 3</h1>
+                <span class="badge-klaster">Usia Dewasa</span>
+                <span class="dokter-tag" id="dokterTag"><i class="fas fa-user-md"></i> <span id="dokterNama">Memuat...</span></span>
+            </div>
         </div>
-        <p>Kelola antrian pasien di klaster Anda</p>
-        <!-- ===== TAMBAHAN TANGGAL DI SINI ===== -->
+        <p style="margin-top:4px;">Kelola antrian pasien di klaster Anda</p>
         <p style="margin-top: -10px; margin-bottom: 16px; color: #64748b; font-size: 0.9rem; border-left: none; padding-left: 0; background: none;">
             <i class="fas fa-calendar-alt" style="margin-right: 6px;"></i> <span id="tanggalSekarang">Memuat tanggal...</span>
         </p>
@@ -211,9 +239,11 @@
 
     <script src="script.js"></script>
     <script>
+        // ============================================================
+        // KLASTER 3 - INTEGRASI DOKTER
+        // ============================================================
         const klasterSaya = 'K3';
 
-        // ===== FUNGSI UPDATE TANGGAL =====
         function updateTanggal() {
             const el = document.getElementById('tanggalSekarang');
             if (!el) return;
@@ -260,14 +290,14 @@
                 const leftDiv = document.createElement('div');
                 if (status === 'waiting') {
                     leftDiv.innerHTML = `
-                        <strong>${nomor}</strong> - ${nama}
-                        <span class="waktu-daftar"><i class="far fa-clock"></i> ${new Date(waktuDaftar).toLocaleTimeString()}</span>
-                    `;
+                                <strong>${nomor}</strong> - ${nama}
+                                <span class="waktu-daftar"><i class="far fa-clock"></i> ${new Date(waktuDaftar).toLocaleTimeString()}</span>
+                            `;
                 } else {
                     leftDiv.innerHTML = `
-                        <strong>${nomor}</strong> - ${nama}
-                        <span class="waktu-panggil">🕐 ${new Date(waktuPanggil).toLocaleTimeString()}</span>
-                    `;
+                                <strong>${nomor}</strong> - ${nama}
+                                <span class="waktu-panggil">🕐 ${new Date(waktuPanggil).toLocaleTimeString()}</span>
+                            `;
                 }
 
                 const rightDiv = document.createElement('div');
@@ -340,14 +370,37 @@
             document.getElementById('count-called').textContent = calledCount;
         }
 
+        // ============================================================
+        // FUNGSI INTEGRASI DOKTER (Membaca dari dokter_assignments/K3)
+        // ============================================================
+        function updateDokter() {
+            database.ref('dokter_assignments/' + klasterSaya).once('value', (snapshot) => {
+                const nama = snapshot.val() || 'Belum ditentukan';
+                document.getElementById('dokterNama').textContent = nama;
+            }).catch(err => {
+                console.warn('Gagal load dokter:', err);
+                document.getElementById('dokterNama').textContent = 'Gagal memuat';
+            });
+        }
+
+        // ============================================================
+        // LISTENER REALTIME
+        // ============================================================
         database.ref('antrians').on('value', (snapshot) => {
             renderAntrian(snapshot);
         });
 
-        // ===== INISIALISASI TANGGAL =====
-        updateTanggal();
+        database.ref('dokter_assignments/' + klasterSaya).on('value', () => {
+            updateDokter();
+        });
 
-        console.log(`🖥️ Dashboard ${klasterSaya} siap.`);
+        // ============================================================
+        // INISIALISASI
+        // ============================================================
+        updateTanggal();
+        updateDokter();
+
+        console.log(`🖥️ Dashboard ${klasterSaya} siap (dokter terintegrasi).`);
     </script>
 </body>
 </html>
