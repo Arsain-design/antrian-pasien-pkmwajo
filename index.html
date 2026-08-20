@@ -157,7 +157,6 @@
             margin-right: 6px;
         }
 
-        /* ===== TOMBOL KELOLA DOKTER ===== */
         .btn-kelola-dokter {
             width: auto;
             padding: 12px 28px;
@@ -179,7 +178,6 @@
             margin-right: 6px;
         }
 
-        /* ===== TOMBOL RESET SEMUA (diperbarui) ===== */
         .btn-reset-semua {
             width: auto;
             padding: 12px 24px;
@@ -205,6 +203,35 @@
         }
         .btn-reset-semua i {
             font-size: 1rem;
+        }
+
+        /* ===== TOMBOL KELOLA ANTRIAN ===== */
+        .btn-kelola-antrian {
+            width: auto;
+            padding: 6px 16px;
+            border-radius: 40px;
+            background: rgba(99, 102, 241, 0.12);
+            color: #4338ca;
+            font-weight: 700;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: none;
+            line-height: 1.6;
+        }
+        .btn-kelola-antrian:hover {
+            background: #4338ca;
+            color: white;
+            border-color: #4338ca;
+            transform: scale(1.04);
+            box-shadow: 0 4px 12px -4px rgba(79, 70, 229, 0.3);
+        }
+        .btn-kelola-antrian:active {
+            transform: scale(0.95);
         }
 
         /* ===== TOOLBAR TERPADU ===== */
@@ -444,7 +471,6 @@
             color: #1e293b;
         }
 
-        /* ===== DOKTER TAG DI PANEL ===== */
         .dokter-tag {
             display: inline-flex;
             align-items: center;
@@ -466,38 +492,6 @@
         .dokter-tag i {
             font-size: 0.7rem;
             color: #0d9488;
-        }
-
-        .btn-reset-klaster {
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            padding: 2px 12px;
-            border-radius: 40px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: none;
-            width: auto;
-            line-height: 1.8;
-            letter-spacing: 0.3px;
-            margin-top: 4px;
-        }
-
-        .btn-reset-klaster:hover {
-            background: #ef4444;
-            color: white;
-            border-color: #ef4444;
-            transform: scale(1.04);
-            box-shadow: 0 4px 12px -4px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-reset-klaster:active {
-            transform: scale(0.95);
         }
 
         /* ===== DAFTAR ISI PANEL ===== */
@@ -593,7 +587,7 @@
             font-style: italic;
         }
 
-        /* ===== MODAL ===== */
+        /* ===== MODAL UMUM ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -625,6 +619,9 @@
         }
         .modal-content.dokter-modal {
             max-width: 600px;
+        }
+        .modal-content.kelola-modal {
+            max-width: 700px;
         }
 
         @keyframes modalIn {
@@ -678,7 +675,6 @@
             font-size: 0.9rem;
         }
 
-        /* ===== SELECT MODERN ===== */
         .select-modern {
             width: 100%;
             padding: 14px 18px;
@@ -710,7 +706,6 @@
             padding: 8px;
         }
 
-        /* ===== TOMBOL ATUR DOKTER ===== */
         .btn-assign-dokter {
             width: 100%;
             padding: 14px;
@@ -734,7 +729,6 @@
             box-shadow: 0 12px 28px -8px rgba(13, 148, 136, 0.5);
         }
 
-        /* ===== RINGKASAN PENUGASAN ===== */
         .assignment-summary {
             margin-top: 24px;
             padding-top: 20px;
@@ -826,6 +820,95 @@
         .btn-batal-modal:hover {
             background: #f1f5f9;
             border-color: #cbd5e1;
+        }
+
+        /* ===== MODAL KELOLA ANTRIAN (daftar dengan checkbox & pencarian) ===== */
+        .daftar-pasien {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 16px 0;
+        }
+        .daftar-pasien .sub-section {
+            margin-bottom: 20px;
+        }
+        .item-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            border: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+        .item-check:hover {
+            background: #f1f5f9;
+        }
+        .item-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4338ca;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .item-check .info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .item-check .info strong {
+            font-weight: 700;
+            color: #1e1b4b;
+            background: rgba(99, 102, 241, 0.08);
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+        .item-check .info .nama {
+            font-weight: 500;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+        .item-check .info .waktu-kecil {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        .item-check.called-status {
+            opacity: 0.7;
+        }
+        .btn-hapus-terpilih {
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-hapus-terpilih:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 28px -8px rgba(239, 68, 68, 0.5);
+        }
+        .btn-hapus-terpilih:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .pilihan-kosong {
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px;
         }
 
         /* ===== TOAST ===== */
@@ -944,7 +1027,8 @@
                 width: 100%;
                 min-width: unset;
             }
-            .modal-content.dokter-modal {
+            .modal-content.dokter-modal,
+            .modal-content.kelola-modal {
                 max-width: 96%;
                 padding: 24px 16px;
             }
@@ -1019,10 +1103,6 @@
                 flex-direction: row;
                 flex-wrap: wrap;
             }
-            .btn-reset-klaster {
-                font-size: 0.6rem;
-                padding: 2px 8px;
-            }
             .modal-content h2 {
                 font-size: 1.3rem;
             }
@@ -1057,6 +1137,13 @@
                 gap: 6px;
                 padding: 8px 12px;
             }
+            /* pencarian di modal kelola */
+            .kelola-search {
+                flex-wrap: wrap;
+            }
+            .kelola-search input {
+                min-width: 120px;
+            }
         }
     </style>
 </head>
@@ -1068,7 +1155,7 @@
             <div class="header-left">
                 <img src="logo-puskesmas.png" alt="Logo Puskesmas" class="logo-puskesmas" id="logoPuskesmas">
                 <div class="judul">
-                    <h1><i style="color:#4338ca; margin-right:8px;"></i> UPTD Puskesmas Wajo</h1>
+                    <h1><i style="color:#4338ca; margin-right:8px;"></i> UPTD PUSKESMAS WAJO</h1>
                     <p>
                         <span class="badge-readonly"><i class="fas fa-lock"></i> Sistem Antrian Pasien</span>
                         <span id="tanggalSekarang" style="margin-left: 12px; color: #64748b; font-weight: 500;">📅 Memuat tanggal...</span>
@@ -1098,8 +1185,7 @@
                     <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Dewasa)
                 </a>
                 <a href="dashboard-k4.html" class="quick-btn k4" target="_blank">
-                    <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Usia 
-                    lanjut)
+                    <span class="icon"><i class="fas fa-user"></i></span> KL 3 (Usia Lanjut)
                 </a>
                 <a href="tv.html" class="quick-btn tv" target="_blank">
                     <span class="icon"><i class="fas fa-tv"></i></span> Tampilan TV
@@ -1125,7 +1211,7 @@
                     </div>
                     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; width:100%;">
                         <span class="dokter-tag" id="dokterK2"><i class="fas fa-user-md"></i> <span id="dokterNamaK2">Belum ditentukan</span></span>
-                        <button class="btn-reset-klaster" onclick="resetKlaster('K2')"><i class="fas fa-trash-alt"></i> Reset</button>
+                        <button class="btn-kelola-antrian" onclick="bukaKelolaAntrian('K2')"><i class="fas fa-list-ul"></i> Kelola Antrian</button>
                     </div>
                 </div>
                 <div class="panel-body" id="bodyK2"></div>
@@ -1140,7 +1226,7 @@
                     </div>
                     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; width:100%;">
                         <span class="dokter-tag" id="dokterK3"><i class="fas fa-user-md"></i> <span id="dokterNamaK3">Belum ditentukan</span></span>
-                        <button class="btn-reset-klaster" onclick="resetKlaster('K3')"><i class="fas fa-trash-alt"></i> Reset</button>
+                        <button class="btn-kelola-antrian" onclick="bukaKelolaAntrian('K3')"><i class="fas fa-list-ul"></i> Kelola Antrian</button>
                     </div>
                 </div>
                 <div class="panel-body" id="bodyK3"></div>
@@ -1155,7 +1241,7 @@
                     </div>
                     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; width:100%;">
                         <span class="dokter-tag" id="dokterK4"><i class="fas fa-user-md"></i> <span id="dokterNamaK4">Belum ditentukan</span></span>
-                        <button class="btn-reset-klaster" onclick="resetKlaster('K4')"><i class="fas fa-trash-alt"></i> Reset</button>
+                        <button class="btn-kelola-antrian" onclick="bukaKelolaAntrian('K4')"><i class="fas fa-list-ul"></i> Kelola Antrian</button>
                     </div>
                 </div>
                 <div class="panel-body" id="bodyK4"></div>
@@ -1237,6 +1323,35 @@
         </div>
     </div>
 
+    <!-- ===== MODAL KELOLA ANTRIAN PER KLASTER (dengan pencarian) ===== -->
+    <div class="modal-overlay" id="modalKelola">
+        <div class="modal-content kelola-modal">
+            <button class="close-modal" onclick="tutupKelolaAntrian()"><i class="fas fa-times"></i></button>
+            <h2 id="kelolaTitle"><i class="fas fa-users-cog"></i> Kelola Antrian</h2>
+            <p style="color: #64748b; margin-bottom: 12px;">Centang pasien yang ingin dihapus, lalu klik tombol di bawah.</p>
+
+            <!-- ===== PENCARIAN DI MODAL KELOLA ===== -->
+            <div style="display:flex; gap:12px; margin-bottom:16px; align-items:center; flex-wrap:wrap;" class="kelola-search">
+                <i class="fas fa-search" style="color:#94a3b8;"></i>
+                <input type="text" id="cariPasienKelola" placeholder="Cari nomor atau nama..." style="flex:1; min-width:150px; padding:10px 16px; border-radius:40px; border:1px solid #e2e8f0; outline:none; font-family:'Inter', sans-serif; font-size:0.95rem;">
+                <button class="search-clear" id="clearCariKelola" style="display:none;" onclick="resetCariKelola()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="daftar-pasien" id="daftarKelola">
+                <!-- Diisi oleh JavaScript -->
+            </div>
+
+            <button class="btn-hapus-terpilih" id="btnHapusTerpilih" onclick="hapusPasienTerpilih()">
+                <i class="fas fa-trash-alt"></i> Hapus yang Dipilih
+            </button>
+            <div id="kelolaNotif" style="margin-top:12px; font-weight:500; text-align:center;"></div>
+
+            <div class="modal-footer-actions" style="border-top: none; margin-top: 12px;">
+                <button class="btn-batal-modal" onclick="tutupKelolaAntrian()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== TOAST ===== -->
     <div id="toast-container"></div>
 
@@ -1288,7 +1403,7 @@
         }
 
         // ============================================================
-        // 2. RESET SEMUA ANTRIAN + DOKTER (DIPERBARUI)
+        // 2. RESET SEMUA ANTRIAN + DOKTER
         // ============================================================
         async function resetAllKlaster() {
             const confirmFirst = confirm(`⚠️ PERINGATAN BESAR!\n\nAnda akan menghapus SEMUA data:\n- Antrian pasien (SEMUA KLASTER)\n- Data dokter (penugasan)\n\nData yang dihapus TIDAK DAPAT DIKEMBALIKAN.\n\nApakah Anda yakin ingin melanjutkan?`);
@@ -1310,7 +1425,6 @@
             }
 
             try {
-                // 1. Hapus semua antrian
                 const snapshotAntrian = await database.ref('antrians').once('value');
                 if (snapshotAntrian.exists()) {
                     const updatesAntrian = {};
@@ -1320,13 +1434,11 @@
                     await database.ref('antrians').update(updatesAntrian);
                 }
 
-                // 2. Hapus semua data dokter assignments
                 await database.ref('dokter_assignments').set(null);
 
                 showToast('✅ SEMUA data antrian dan data dokter berhasil di-reset!', 'success');
                 console.log('🔄 Semua data antrian dan dokter berhasil direset.');
 
-                // Update UI tags dokter menjadi "Belum ditentukan"
                 ['K2', 'K3', 'K4'].forEach(k => {
                     const el = document.getElementById(`dokterNama${k}`);
                     if (el) el.textContent = 'Belum ditentukan';
@@ -1339,54 +1451,219 @@
         }
 
         // ============================================================
-        // 3. RESET PER KLASTER (hanya antrian)
+        // 3. FUNGSI KELOLA ANTRIAN (seleksi & hapus) + PENCARIAN
         // ============================================================
-        async function resetKlaster(klaster) {
-            const namaKlaster = {
-                'K2': 'Klaster 2 (Anak & Remaja)',
-                'K3': 'Klaster 3 (Usia Dewasa)',
-                'K4': 'Klaster 3 (Usia Lanjut)'
-            };
+        let klasterSaatIni = '';
+        let dataPasienKelola = []; // semua data pasien di klaster ini
+        let selectedIds = new Set(); // menyimpan id yang dicentang
 
-            const confirmFirst = confirm(`⚠️ PERINGATAN!\n\nAnda akan menghapus SEMUA data antrian di ${namaKlaster[klaster]}.\n\nData yang dihapus TIDAK DAPAT DIKEMBALIKAN.\n\nApakah Anda yakin ingin melanjutkan?`);
-            if (!confirmFirst) {
-                showToast('Reset dibatalkan.', 'info');
-                return;
-            }
+        function bukaKelolaAntrian(klaster) {
+            klasterSaatIni = klaster;
+            selectedIds = new Set(); // reset pilihan
+            document.getElementById('modalKelola').classList.add('active');
+            document.getElementById('kelolaNotif').textContent = '';
+            document.getElementById('btnHapusTerpilih').disabled = false;
+            document.getElementById('btnHapusTerpilih').innerHTML = '<i class="fas fa-trash-alt"></i> Hapus yang Dipilih';
 
-            const userInput = prompt(`🔒 KONFIRMASI AKHIR\n\nKetik "${klaster}" untuk menghapus semua antrian di ${namaKlaster[klaster]}:\n(Ketik "BATAL" untuk membatalkan)`);
+            // Reset pencarian
+            document.getElementById('cariPasienKelola').value = '';
+            document.getElementById('clearCariKelola').style.display = 'none';
 
-            if (userInput === null) {
-                showToast('Reset dibatalkan.', 'info');
-                return;
-            }
+            const label = { K2: 'Klaster 2 (Anak & Remaja)', K3: 'Klaster 3 (Usia Dewasa)', K4: 'Klaster 3 (Usia Lanjut)' };
+            document.getElementById('kelolaTitle').innerHTML = `<i class="fas fa-users-cog"></i> Kelola Antrian - ${label[klaster]}`;
 
-            if (userInput.toUpperCase() !== klaster) {
-                showToast(`❌ Reset gagal: Kode "${userInput}" tidak cocok dengan "${klaster}".`, 'error');
-                return;
-            }
-
-            try {
-                const snapshot = await database.ref('antrians').orderByChild('klaster').equalTo(klaster).once('value');
-
+            database.ref('antrians').orderByChild('klaster').equalTo(klaster).once('value', (snapshot) => {
                 if (!snapshot.exists()) {
-                    showToast(`📭 Tidak ada data di ${namaKlaster[klaster]} untuk di-reset.`, 'info');
+                    dataPasienKelola = [];
+                    document.getElementById('daftarKelola').innerHTML = `<div class="pilihan-kosong">📭 Tidak ada data di klaster ini.</div>`;
                     return;
                 }
 
-                const updates = {};
-                snapshot.forEach((child) => {
-                    updates[child.key] = null;
+                let waitingList = [];
+                let calledList = [];
+
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    const entry = {
+                        id: childSnapshot.key,
+                        nomor: data.nomor_antrian,
+                        nama: data.nama_pasien,
+                        status: data.status,
+                        waktu_daftar: data.waktu_daftar || 0,
+                        waktu_panggil: data.waktu_panggil || 0
+                    };
+                    if (data.status === 'waiting') {
+                        waitingList.push(entry);
+                    } else if (data.status === 'called') {
+                        calledList.push(entry);
+                    }
                 });
 
-                await database.ref('antrians').update(updates);
+                waitingList.sort((a, b) => a.nomor.localeCompare(b.nomor));
+                calledList.sort((a, b) => b.waktu_panggil - a.waktu_panggil);
 
-                showToast(`✅ ${namaKlaster[klaster]} berhasil di-reset!`, 'success');
-                console.log(`🔄 Data klaster ${klaster} berhasil direset.`);
+                dataPasienKelola = [...waitingList, ...calledList];
+                renderKelola(''); // tampilkan semua
+            });
+        }
+
+        function renderKelola(filterText) {
+            const container = document.getElementById('daftarKelola');
+            const query = filterText.toLowerCase().trim();
+
+            // Filter data
+            let filtered = dataPasienKelola;
+            if (query) {
+                filtered = dataPasienKelola.filter(item =>
+                    item.nomor.toLowerCase().includes(query) ||
+                    item.nama.toLowerCase().includes(query)
+                );
+            }
+
+            // Kelompokkan lagi menjadi waiting dan called
+            const waitingList = filtered.filter(item => item.status === 'waiting');
+            const calledList = filtered.filter(item => item.status === 'called');
+
+            let html = '';
+
+            // Bagian Menunggu
+            html += `<div class="sub-section">
+                        <div class="label-section">
+                            <span>⏳ Menunggu</span>
+                            <span class="count-badge">${waitingList.length}</span>
+                        </div>`;
+            if (waitingList.length === 0) {
+                html += `<div class="empty-state">${query ? 'Tidak ada yang cocok' : 'Tidak ada antrian menunggu'}</div>`;
+            } else {
+                waitingList.forEach(item => {
+                    const waktu = item.waktu_daftar ? new Date(item.waktu_daftar).toLocaleTimeString() : '';
+                    const checked = selectedIds.has(item.id) ? 'checked' : '';
+                    html += `
+                                <div class="item-check">
+                                    <input type="checkbox" data-id="${item.id}" class="cek-pasien" ${checked} onchange="toggleCheckbox('${item.id}')">
+                                    <div class="info">
+                                        <strong>${item.nomor}</strong>
+                                        <span class="nama">${item.nama}</span>
+                                        <span class="waktu-kecil"><i class="far fa-clock"></i> ${waktu}</span>
+                                    </div>
+                                </div>
+                            `;
+                });
+            }
+            html += `</div>`;
+
+            // Bagian Sudah Dipanggil
+            html += `<div class="sub-section">
+                        <div class="label-section">
+                            <span>📢 Sudah Dipanggil</span>
+                            <span class="count-badge">${calledList.length}</span>
+                        </div>`;
+            if (calledList.length === 0) {
+                html += `<div class="empty-state">${query ? 'Tidak ada yang cocok' : 'Belum ada panggilan'}</div>`;
+            } else {
+                calledList.forEach(item => {
+                    const waktu = item.waktu_panggil ? new Date(item.waktu_panggil).toLocaleTimeString() : '';
+                    const checked = selectedIds.has(item.id) ? 'checked' : '';
+                    html += `
+                                <div class="item-check called-status">
+                                    <input type="checkbox" data-id="${item.id}" class="cek-pasien" ${checked} onchange="toggleCheckbox('${item.id}')">
+                                    <div class="info">
+                                        <strong>${item.nomor}</strong>
+                                        <span class="nama">${item.nama}</span>
+                                        <span class="waktu-kecil">🕐 ${waktu}</span>
+                                    </div>
+                                </div>
+                            `;
+                });
+            }
+            html += `</div>`;
+
+            container.innerHTML = html;
+
+            // Tampilkan/sembunyikan tombol clear pencarian
+            const clearBtn = document.getElementById('clearCariKelola');
+            if (query.length > 0) {
+                clearBtn.style.display = 'flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        }
+
+        // Fungsi untuk toggle checkbox dan update selectedIds
+        function toggleCheckbox(id) {
+            const cb = document.querySelector(`.cek-pasien[data-id="${id}"]`);
+            if (cb) {
+                if (cb.checked) {
+                    selectedIds.add(id);
+                } else {
+                    selectedIds.delete(id);
+                }
+            }
+        }
+
+        // Event listener untuk pencarian di modal kelola
+        document.getElementById('cariPasienKelola').addEventListener('input', function(e) {
+            renderKelola(e.target.value);
+        });
+
+        function resetCariKelola() {
+            document.getElementById('cariPasienKelola').value = '';
+            renderKelola('');
+            document.getElementById('cariPasienKelola').focus();
+        }
+
+        function tutupKelolaAntrian() {
+            document.getElementById('modalKelola').classList.remove('active');
+            document.getElementById('daftarKelola').innerHTML = '';
+            dataPasienKelola = [];
+            selectedIds = new Set();
+        }
+
+        document.getElementById('modalKelola').addEventListener('click', function(e) {
+            if (e.target === this) tutupKelolaAntrian();
+        });
+
+        async function hapusPasienTerpilih() {
+            // Ambil semua id yang dicentang dari selectedIds
+            const ids = Array.from(selectedIds);
+            if (ids.length === 0) {
+                showToast('⚠️ Pilih minimal satu pasien untuk dihapus.', 'warning');
+                document.getElementById('kelolaNotif').textContent = '⚠️ Pilih minimal satu pasien.';
+                document.getElementById('kelolaNotif').style.color = 'orange';
+                return;
+            }
+
+            const confirmMsg = `Anda akan menghapus ${ids.length} pasien. Yakin?`;
+            if (!confirm(confirmMsg)) {
+                document.getElementById('kelolaNotif').textContent = '⏹️ Dibatalkan.';
+                document.getElementById('kelolaNotif').style.color = 'orange';
+                return;
+            }
+
+            const btn = document.getElementById('btnHapusTerpilih');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghapus...';
+            document.getElementById('kelolaNotif').textContent = '';
+
+            try {
+                const updates = {};
+                ids.forEach(id => {
+                    updates[`antrians/${id}`] = null;
+                });
+                await database.ref().update(updates);
+
+                showToast(`✅ ${ids.length} pasien berhasil dihapus.`, 'success');
+                document.getElementById('kelolaNotif').textContent = `✅ Berhasil menghapus ${ids.length} pasien.`;
+                document.getElementById('kelolaNotif').style.color = 'green';
+
+                setTimeout(() => tutupKelolaAntrian(), 1000);
 
             } catch (error) {
-                showToast(`❌ Gagal mereset ${namaKlaster[klaster]}: ${error.message}`, 'error');
-                console.error('Error reset klaster:', error);
+                showToast(`❌ Gagal menghapus: ${error.message}`, 'error');
+                document.getElementById('kelolaNotif').textContent = '❌ Gagal: ' + error.message;
+                document.getElementById('kelolaNotif').style.color = 'red';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash-alt"></i> Hapus yang Dipilih';
             }
         }
 
@@ -1468,7 +1745,6 @@
 
                 let html = '';
 
-                // SECTION WAITING
                 html += `<div class="sub-section">
                                 <div class="label-section">
                                     <span>⏳ Menunggu</span>
@@ -1493,7 +1769,6 @@
                 }
                 html += `</div>`;
 
-                // SECTION CALLED
                 html += `<div class="sub-section">
                                 <div class="label-section">
                                     <span>📢 Sudah Dipanggil</span>
@@ -1632,7 +1907,7 @@
         });
 
         // ============================================================
-        // 8. MODAL KELOLA DOKTER (2 SELECT BOX) - STRUKTUR DATA BARU
+        // 8. MODAL KELOLA DOKTER (2 SELECT BOX)
         // ============================================================
         const DAFTAR_DOKTER = [
             'dr. ERNAWATY MADI',
@@ -1646,15 +1921,11 @@
             'dr. WA ODE NUR DIAN AL JANNA'
         ];
 
-        // Data disimpan di Firebase dengan key = klaster (K2, K3, K4)
-        // value = nama dokter
-
         function bukaModalDokter() {
             document.getElementById('modalDokter').classList.add('active');
             document.getElementById('modalDokterNotif').textContent = '';
             document.getElementById('selectDokter').value = '';
             document.getElementById('selectKlaster').value = '';
-            // Isi dropdown dokter
             const selectDokter = document.getElementById('selectDokter');
             selectDokter.innerHTML = '<option value="">-- Pilih Dokter --</option>';
             DAFTAR_DOKTER.forEach(nama => {
@@ -1678,7 +1949,6 @@
             try {
                 const snapshot = await database.ref('dokter_assignments').once('value');
                 const data = snapshot.val() || {};
-                // data = { K2: "dr. X", K3: "dr. Y", K4: "dr. Z" }
                 const container = document.getElementById('summaryList');
                 const klasterList = ['K2', 'K3', 'K4'];
                 const labelMap = {
@@ -1699,7 +1969,6 @@
                             `;
                 });
                 container.innerHTML = html;
-                // Update tag dokter di panel utama
                 updateDokterTags(data);
             } catch (error) {
                 showToast('❌ Gagal memuat ringkasan: ' + error.message, 'error');
@@ -1707,7 +1976,6 @@
             }
         }
 
-        // Tombol Atur Dokter
         document.getElementById('btnAssignDokter').addEventListener('click', async function() {
             const selectDokter = document.getElementById('selectDokter');
             const selectKlaster = document.getElementById('selectKlaster');
@@ -1724,7 +1992,6 @@
                 return;
             }
 
-            // Cek apakah klaster sudah terisi oleh dokter lain
             let existing = null;
             try {
                 const snap = await database.ref('dokter_assignments').once('value');
@@ -1744,7 +2011,6 @@
                 }
             }
 
-            // Simpan ke Firebase dengan key = klaster
             const btn = this;
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -1757,11 +2023,8 @@
                 showToast(`✅ ${dokter} ditugaskan ke ${klaster}`, 'success');
                 notif.style.color = 'green';
                 notif.textContent = `✅ Berhasil! ${dokter} → ${klaster}`;
-                // Refresh ringkasan
                 muatRingkasan();
-                // Reset dropdown
                 selectKlaster.value = '';
-                // selectDokter.value = ''; // biarkan agar mudah assign ulang
             } catch (error) {
                 showToast('❌ Gagal menyimpan: ' + error.message, 'error');
                 notif.style.color = 'red';
@@ -1773,13 +2036,8 @@
             }
         });
 
-        // ============================================================
-        // 9. UPDATE TAG DOKTER DI PANEL UTAMA
-        // ============================================================
         function updateDokterTags(data) {
-            // data = { K2: "dr. X", K3: "dr. Y", K4: "dr. Z" }
             if (!data) {
-                // Ambil dari Firebase jika belum ada
                 database.ref('dokter_assignments').once('value', (snap) => {
                     const d = snap.val() || {};
                     updateDokterTags(d);
@@ -1795,24 +2053,22 @@
         }
 
         // ============================================================
-        // 10. LISTEN FIREBASE
+        // 9. LISTEN FIREBASE
         // ============================================================
         database.ref('antrians').on('value', (snapshot) => {
             renderSemua(snapshot);
         });
 
-        // Listen perubahan dokter assignments
         database.ref('dokter_assignments').on('value', (snapshot) => {
             const data = snapshot.val() || {};
             updateDokterTags(data);
-            // Jika modal terbuka, refresh ringkasan
             if (document.getElementById('modalDokter').classList.contains('active')) {
                 muatRingkasan();
             }
         });
 
         // ============================================================
-        // 11. SEARCH EVENT
+        // 10. SEARCH EVENT
         // ============================================================
         let searchTimeout;
         document.getElementById('searchInput').addEventListener('input', function(e) {
@@ -1824,7 +2080,7 @@
         });
 
         // ============================================================
-        // 12. TANGGAL
+        // 11. TANGGAL
         // ============================================================
         function updateTanggal() {
             const el = document.getElementById('tanggalSekarang');
@@ -1840,14 +2096,13 @@
         updateTanggal();
 
         // ============================================================
-        // 13. INISIALISASI
+        // 12. INISIALISASI
         // ============================================================
-        // Ambil data dokter awal
         database.ref('dokter_assignments').once('value', (snap) => {
             updateDokterTags(snap.val() || {});
         });
 
-        console.log('🏢 Dashboard dengan struktur dokter baru (key = klaster) dan reset semua data siap!');
+        console.log('🏢 Dashboard dengan kelola antrian selektif & pencarian siap!');
     </script>
 </body>
 </html>
