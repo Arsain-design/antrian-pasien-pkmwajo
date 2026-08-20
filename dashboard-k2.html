@@ -3,22 +3,222 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Antrian K2</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Antrian K2 · Anak & Remaja</title>
+
+    <!-- ===== STYLES ===== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
-        /* ============================================================
-           GAYA KHUSUS UNTUK DASHBOARD KLASTER 2 (BIRU)
-           ============================================================ */
+        /* ---------- RESET & GLOBAL ---------- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f9ff;
+            min-height: 100vh;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 40px 40px 32px 32px;
+            padding: 28px 28px 36px;
+            box-shadow: 0 20px 60px -16px rgba(14, 165, 233, 0.18), 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.2s;
+        }
+
+        /* ---------- HEADER ---------- */
+        .header-dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+        }
+
+        .header-left h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-left h1 i {
+            color: #38bdf8;
+            font-size: 1.4rem;
+        }
+
+        .badge-klaster {
+            background: #38bdf8;
+            color: #0c4a6e;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .dokter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 4px 14px 4px 10px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #0c4a6e;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            white-space: nowrap;
+        }
+
+        .dokter-tag i {
+            font-size: 0.7rem;
+            color: #0ea5e9;
+        }
+
+        .header-sub {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 20px;
+            margin-top: 4px;
+            margin-bottom: 14px;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        .header-sub i {
+            color: #94a3b8;
+            width: 16px;
+            text-align: center;
+        }
+
+        .header-sub .tanggal {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* ---------- SEARCH BAR ---------- */
+        .search-wrapper {
+            position: relative;
+            margin: 8px 0 18px 0;
+        }
+
+        .search-wrapper .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 48px 14px 46px;
+            border-radius: 60px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #0f172a;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            outline: none;
+        }
+
+        .search-wrapper input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        .search-wrapper input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15), 0 4px 16px rgba(56, 189, 248, 0.08);
+        }
+
+        .search-wrapper input:focus+.search-icon {
+            color: #0ea5e9;
+        }
+
+        .search-wrapper .clear-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 40px;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        .search-wrapper .clear-btn.visible {
+            display: block;
+        }
+
+        .search-wrapper .clear-btn:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .search-status {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 6px;
+            padding-left: 6px;
+            min-height: 1.4em;
+        }
+
+        .search-status strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* ---------- TABS ---------- */
         .tab-container {
             display: flex;
             gap: 12px;
-            margin: 20px 0 10px 0;
+            margin: 10px 0 4px 0;
             border-bottom: 2px solid rgba(226, 232, 240, 0.6);
-            padding-bottom: 4px;
+            padding-bottom: 2px;
         }
+
         .tab-btn {
             width: auto;
             padding: 10px 28px;
@@ -32,15 +232,15 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            font-family: inherit;
         }
-        .tab-btn::after {
-            display: none;
-        }
+
         .tab-btn:hover {
             background: rgba(56, 189, 248, 0.05);
             transform: translateY(-2px);
             color: #1e293b;
         }
+
         .tab-btn.active {
             background: transparent;
             color: #0ea5e9;
@@ -48,13 +248,7 @@
             border-bottom: 4px solid #38bdf8;
             border-radius: 0;
         }
-        .tab-content {
-            display: none;
-            padding-top: 10px;
-        }
-        .tab-content.active {
-            display: block;
-        }
+
         .badge-count {
             background: #e2e8f0;
             color: #334155;
@@ -63,43 +257,65 @@
             font-size: 0.75rem;
             font-weight: 700;
             margin-left: 8px;
+            transition: all 0.25s;
         }
+
         .tab-btn.active .badge-count {
             background: #bae6fd;
             color: #0369a1;
         }
-        .btn-panggil-ulang {
-            width: auto;
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
-            box-shadow: 0 6px 16px -4px rgba(245, 158, 11, 0.4);
-            letter-spacing: 0.5px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
+
+        /* ---------- PATIENT LISTS ---------- */
+        .tab-content {
+            display: none;
+            padding-top: 14px;
         }
-        .btn-panggil-ulang:hover {
-            transform: scale(1.06) translateY(-2px);
-            box-shadow: 0 12px 24px -6px rgba(245, 158, 11, 0.5);
+
+        .tab-content.active {
+            display: block;
         }
+
+        .daftar-antrian {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .empty-state {
+            color: #94a3b8;
+            text-align: center;
+            padding: 32px 16px;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            border: 1px dashed #d1d5db;
+        }
+
+        .empty-state i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        /* ---------- PATIENT CARD ---------- */
         .card-antrian {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(8px);
-            padding: 18px 24px;
+            padding: 16px 22px;
             border-radius: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: all 0.25s ease;
             position: relative;
             overflow: hidden;
         }
+
         .card-antrian::before {
             content: '';
             position: absolute;
@@ -110,299 +326,568 @@
             border-radius: 0 4px 4px 0;
             background: #38bdf8;
         }
+
         .card-antrian:hover {
             transform: translateX(6px);
-            box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.12);
             border-color: #bae6fd;
         }
-        .card-antrian.called {
-            opacity: 0.85;
-            background: rgba(255, 255, 255, 0.5);
-        }
+
         .card-antrian.called::before {
             background: #94a3b8;
         }
-        .card-antrian .waktu-panggil {
+
+        .card-antrian.called {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .card-antrian .info-left {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 6px 14px;
+            flex: 1 1 200px;
+        }
+
+        .card-antrian .info-left .nomor {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #0f172a;
+        }
+
+        .card-antrian .info-left .nama {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .card-antrian .info-left .waktu {
             font-size: 0.75rem;
             color: #94a3b8;
             font-weight: 400;
-            margin-left: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-        .card-antrian .waktu-daftar {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            font-weight: 400;
-            margin-left: 12px;
+
+        .card-antrian .info-left .waktu i {
+            font-size: 0.7rem;
         }
-        .badge-klaster {
-            background: #38bdf8;
-            color: #0c4a6e;
+
+        .card-antrian .actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
         }
+
         .btn-panggil {
             width: auto;
-            padding: 12px 28px;
+            padding: 10px 24px;
             border-radius: 60px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.4);
-            letter-spacing: 0.5px;
+            box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.35);
             color: white;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
         }
+
         .btn-panggil:hover {
-            transform: scale(1.06) translateY(-2px);
-            box-shadow: 0 12px 24px -6px rgba(16, 185, 129, 0.5);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 24px -6px rgba(16, 185, 129, 0.45);
         }
-        .dokter-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(56, 189, 248, 0.12);
-            padding: 4px 14px 4px 10px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #0c4a6e;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            margin-left: 12px;
+
+        .btn-panggil:active {
+            transform: scale(0.97);
         }
-        .dokter-tag i {
-            font-size: 0.7rem;
-            color: #0ea5e9;
+
+        .btn-panggil-ulang {
+            width: auto;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            box-shadow: 0 6px 16px -4px rgba(245, 158, 11, 0.35);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
         }
-        @media (max-width: 640px) {
+
+        .btn-panggil-ulang:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 24px -6px rgba(245, 158, 11, 0.45);
+        }
+
+        .btn-panggil-ulang:active {
+            transform: scale(0.97);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 700px) {
+            .container {
+                padding: 18px 14px 24px;
+                border-radius: 28px;
+            }
+
+            .header-left h1 {
+                font-size: 1.3rem;
+            }
+
             .tab-container {
                 gap: 4px;
                 overflow-x: auto;
                 flex-wrap: nowrap;
                 white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
             }
+
             .tab-btn {
                 padding: 8px 16px;
-                font-size: 0.85rem;
+                font-size: 0.82rem;
             }
-            .btn-panggil-ulang,
-            .btn-panggil {
-                padding: 10px 16px;
-                font-size: 0.8rem;
+
+            .search-wrapper input {
+                padding: 12px 44px 12px 42px;
+                font-size: 0.92rem;
             }
+
             .card-antrian {
-                flex-wrap: wrap;
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: stretch;
             }
+
+            .card-antrian .info-left {
+                flex: 1 1 auto;
+            }
+
+            .card-antrian .actions {
+                justify-content: flex-end;
+                margin-top: 4px;
+            }
+
+            .btn-panggil,
+            .btn-panggil-ulang {
+                padding: 8px 18px;
+                font-size: 0.78rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 12px 8px;
+            }
+
+            .container {
+                padding: 14px 10px 18px;
+                border-radius: 20px;
+            }
+
+            .header-left h1 {
+                font-size: 1.1rem;
+            }
+
+            .badge-klaster {
+                font-size: 0.65rem;
+                padding: 2px 10px;
+            }
+
             .dokter-tag {
                 font-size: 0.7rem;
                 padding: 2px 10px;
-                margin-left: 0;
-                margin-top: 4px;
             }
+
+            .tab-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .card-antrian .info-left .nomor {
+                font-size: 0.9rem;
+            }
+
+            .card-antrian .info-left .nama {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ---------- SCROLLBAR ---------- */
+        .daftar-antrian::-webkit-scrollbar {
+            width: 4px;
+        }
+        .daftar-antrian::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .daftar-antrian::-webkit-scrollbar-thumb {
+            background: #bae6fd;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
+
+        <!-- ===== HEADER ===== -->
         <div class="header-dashboard">
-            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-                <h1 style="margin:0;"><i class="fas fa-child" style="color:#38bdf8;"></i> Antrian Klaster 2</h1>
-                <span class="badge-klaster">Anak & Remaja</span>
-                <span class="dokter-tag" id="dokterTag"><i class="fas fa-user-md"></i> <span id="dokterNama">Memuat...</span></span>
+            <div class="header-left">
+                <h1><i class="fas fa-child"></i> Antrian K2</h1>
+                <span class="badge-klaster">Anak &amp; Remaja</span>
+                <span class="dokter-tag" id="dokterTag">
+                    <i class="fas fa-user-md"></i>
+                    <span id="dokterNama">Memuat...</span>
+                </span>
             </div>
         </div>
-        <p style="margin-top:4px;">Kelola antrian pasien di klaster Anda</p>
-        <p style="margin-top: -10px; margin-bottom: 16px; color: #64748b; font-size: 0.9rem; border-left: none; padding-left: 0; background: none;">
-            <i class="fas fa-calendar-alt" style="margin-right: 6px;"></i> <span id="tanggalSekarang">Memuat tanggal...</span>
-        </p>
 
+        <div class="header-sub">
+            <span><i class="fas fa-calendar-alt"></i> <span class="tanggal" id="tanggalSekarang">Memuat tanggal...</span></span>
+            <span><i class="fas fa-clipboard-list"></i> Total <span id="totalPasien">0</span> pasien</span>
+        </div>
+
+        <!-- ===== SEARCH BAR ===== -->
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input
+            type="text"
+            id="searchInput"
+            placeholder="Cari nomor antrian atau nama pasien..."
+            autocomplete="off"
+            spellcheck="false"
+            />
+            <button class="clear-btn" id="clearSearchBtn" aria-label="Hapus pencarian">
+                <i class="fas fa-times-circle"></i>
+            </button>
+        </div>
+        <div class="search-status" id="searchStatus"></div>
+
+        <!-- ===== TABS ===== -->
         <div class="tab-container">
             <button class="tab-btn active" data-tab="waiting" onclick="switchTab('waiting')">
-                <i class="fas fa-users"></i> Menunggu <span class="badge-count" id="count-waiting">0</span>
+                <i class="fas fa-users"></i> Menunggu
+                <span class="badge-count" id="count-waiting">0</span>
             </button>
             <button class="tab-btn" data-tab="called" onclick="switchTab('called')">
-                <i class="fas fa-phone"></i> Sudah Dipanggil <span class="badge-count" id="count-called">0</span>
+                <i class="fas fa-phone"></i> Dipanggil
+                <span class="badge-count" id="count-called">0</span>
             </button>
         </div>
 
+        <!-- ===== TAB CONTENT ===== -->
         <div id="tab-waiting" class="tab-content active">
             <div id="daftarWaiting" class="daftar-antrian">
-                <p style="color: #999; text-align:center; padding:20px;">Memuat data...</p>
+                <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
             </div>
         </div>
 
         <div id="tab-called" class="tab-content">
             <div id="daftarCalled" class="daftar-antrian">
-                <p style="color: #999; text-align:center; padding:20px;">Memuat data...</p>
+                <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
             </div>
         </div>
+
     </div>
 
-    <script src="script.js"></script>
+    <!-- ===== FIREBASE ===== -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+    </script>
+
     <script>
-        // ============================================================
-        // KLASTER 2 - INTEGRASI DOKTER
-        // ============================================================
-        const klasterSaya = 'K2';
+        // ================================================================
+        //  1.  FIREBASE KONFIGURASI & INISIALISASI
+        // ================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-nAMpSMXfomAxtq5Ntebv0IYOmuKitj0",
+            authDomain: "sistem-antrian-puskesmas.firebaseapp.com",
+            databaseURL: "https://sistem-antrian-puskesmas-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "sistem-antrian-puskesmas",
+            storageBucket: "sistem-antrian-puskesmas.firebasestorage.app",
+            messagingSenderId: "727104534075",
+            appId: "1:727104534075:web:9814d1598c9f846e050e1e"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // ================================================================
+        //  2.  KONSTANTA & STATE
+        // ================================================================
+        const KLASTER = 'K2';
+        let allPatients = []; // array of { id, nomor_antrian, nama_pasien, status, waktu_panggil, waktu_daftar }
+        let searchTerm = '';
+        let currentTab = 'waiting'; // 'waiting' | 'called'
+
+        // DOM refs
+        const $ = (id) => document.getElementById(id);
+        const searchInput = $('searchInput');
+        const clearBtn = $('clearSearchBtn');
+        const searchStatus = $('searchStatus');
+        const daftarWaiting = $('daftarWaiting');
+        const daftarCalled = $('daftarCalled');
+        const countWaiting = $('count-waiting');
+        const countCalled = $('count-called');
+        const totalPasien = $('totalPasien');
+        const dokterNama = $('dokterNama');
+        const tanggalSekarang = $('tanggalSekarang');
+
+        // ================================================================
+        //  3.  FUNGSI UTILITY
+        // ================================================================
+        function formatTime(ts) {
+            if (!ts) return '—';
+            try { return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); } catch { return '—'; }
+        }
 
         function updateTanggal() {
-            const el = document.getElementById('tanggalSekarang');
-            if (!el) return;
             try {
                 const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const dateString = now.toLocaleDateString('id-ID', options);
-                el.textContent = dateString;
-            } catch (e) {
-                el.textContent = 'Memuat tanggal...';
+                const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                tanggalSekarang.textContent = now.toLocaleDateString('id-ID', opts);
+            } catch {
+                tanggalSekarang.textContent = '—';
             }
         }
 
+        // ================================================================
+        //  4.  FUNGSI DOKTER
+        // ================================================================
+        function loadDokter() {
+            database.ref('dokter_assignments/' + KLASTER).once('value')
+                .then(snap => {
+                    dokterNama.textContent = snap.val() || 'Belum ditentukan';
+                })
+                .catch(() => {
+                    dokterNama.textContent = 'Gagal memuat';
+                });
+        }
+
+        // ================================================================
+        //  5.  RENDER UTAMA — dengan filter pencarian
+        // ================================================================
+        function render() {
+            // 5a. Filter berdasarkan status + search
+            const term = searchTerm.trim().toLowerCase();
+
+            const waitingList = allPatients.filter(p => p.status === 'waiting');
+            const calledList = allPatients.filter(p => p.status === 'called');
+
+            const filterFn = (p) => {
+                if (!term) return true;
+                const nomor = String(p.nomor_antrian || '').toLowerCase();
+                const nama = String(p.nama_pasien || '').toLowerCase();
+                return nomor.includes(term) || nama.includes(term);
+            };
+
+            const filteredWaiting = waitingList.filter(filterFn);
+            const filteredCalled = calledList.filter(filterFn);
+
+            // 5b. Render ke DOM
+            renderList(daftarWaiting, filteredWaiting, 'waiting');
+            renderList(daftarCalled, filteredCalled, 'called');
+
+            // 5c. Update badge counts
+            countWaiting.textContent = filteredWaiting.length;
+            countCalled.textContent = filteredCalled.length;
+            totalPasien.textContent = allPatients.length;
+
+            // 5d. Status pencarian
+            if (term) {
+                const totalMatch = filteredWaiting.length + filteredCalled.length;
+                searchStatus.innerHTML =
+                    `<i class="fas fa-search" style="color:#38bdf8;margin-right:6px;"></i> Menampilkan <strong>${totalMatch}</strong> hasil untuk "<strong>${term}</strong>"`;
+            } else {
+                searchStatus.innerHTML = '';
+            }
+
+            // 5e. Tampilkan / sembunyikan tombol clear
+            clearBtn.classList.toggle('visible', term.length > 0);
+        }
+
+        // ================================================================
+        //  6.  RENDER SATU LIST (waiting atau called)
+        // ================================================================
+        function renderList(container, items, status) {
+            if (!container) return;
+
+            if (items.length === 0) {
+                const msg = (status === 'waiting') ?
+                    '✅ Tidak ada pasien menunggu.' :
+                    '📭 Belum ada pasien yang dipanggil.';
+                const icon = (status === 'waiting') ? 'fa-check-circle' : 'fa-inbox';
+                container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas ${icon}" style="color:#cbd5e1;"></i>
+                                ${msg}
+                            </div>
+                        `;
+                return;
+            }
+
+            let html = '';
+            for (const p of items) {
+                const isCalled = (p.status === 'called');
+                const waktuLabel = isCalled ? '🕐 ' + formatTime(p.waktu_panggil) : '🕐 ' + formatTime(p.waktu_daftar);
+                const waktuIcon = isCalled ? 'fa-clock' : 'fa-hourglass-start';
+
+                const btnHTML = isCalled ?
+                    `<button class="btn-panggil-ulang" data-id="${p.id}" data-nama="${p.nama_pasien}" data-nomor="${p.nomor_antrian}">
+                                <i class="fas fa-rotate-right"></i> Panggil Ulang
+                            </button>` :
+                    `<button class="btn-panggil" data-id="${p.id}" data-nama="${p.nama_pasien}" data-nomor="${p.nomor_antrian}">
+                                <i class="fas fa-bullhorn"></i> Panggil
+                            </button>`;
+
+                const cardClass = isCalled ? 'card-antrian called' : 'card-antrian';
+
+                html += `
+                            <div class="${cardClass}">
+                                <div class="info-left">
+                                    <span class="nomor">${p.nomor_antrian}</span>
+                                    <span class="nama">${p.nama_pasien}</span>
+                                    <span class="waktu"><i class="fas ${waktuIcon}"></i> ${waktuLabel}</span>
+                                </div>
+                                <div class="actions">
+                                    ${btnHTML}
+                                </div>
+                            </div>
+                        `;
+            }
+
+            container.innerHTML = html;
+
+            // 6a. Pasang event listener untuk tombol di dalam container
+            container.querySelectorAll('.btn-panggil, .btn-panggil-ulang').forEach(btn => {
+                btn.addEventListener('click', handlePanggilClick);
+            });
+        }
+
+        // ================================================================
+        //  7.  HANDLER PANGGIL / PANGGIL ULANG
+        // ================================================================
+        async function handlePanggilClick(e) {
+            const btn = e.currentTarget;
+            const id = btn.dataset.id;
+            const nama = btn.dataset.nama;
+            const nomor = btn.dataset.nomor;
+            const isUlang = btn.classList.contains('btn-panggil-ulang');
+
+            const action = isUlang ? 'panggil ULANG' : 'panggil';
+            const confirmMsg = isUlang ?
+                `Panggil ULANG ${nama} (${nomor}) ?\nPasien akan muncul kembali di layar TV.` :
+                `Panggil ${nama} (${nomor}) ?`;
+
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                await database.ref('antrians/' + id).update({
+                    status: 'called',
+                    waktu_panggil: Date.now()
+                });
+                alert(`✅ ${nomor} - ${nama} berhasil di${action}!`);
+            } catch (err) {
+                alert('❌ Gagal: ' + err.message);
+            }
+        }
+
+        // ================================================================
+        //  8.  FIREBASE LISTENER — data antrian
+        // ================================================================
+        database.ref('antrians').on('value', (snapshot) => {
+            const raw = [];
+            snapshot.forEach((child) => {
+                const data = child.val();
+                if (data.klaster !== KLASTER) return;
+                raw.push({
+                    id: child.key,
+                    nomor_antrian: data.nomor_antrian || '—',
+                    nama_pasien: data.nama_pasien || '—',
+                    status: data.status || 'waiting',
+                    waktu_panggil: data.waktu_panggil || 0,
+                    waktu_daftar: data.waktu_daftar || 0,
+                });
+            });
+            // Urutkan: waiting → called, lalu berdasarkan nomor antrian (asc)
+            raw.sort((a, b) => {
+                if (a.status === b.status) {
+                    return (String(a.nomor_antrian) || '').localeCompare(String(b.nomor_antrian) || '');
+                }
+                return a.status === 'waiting' ? -1 : 1;
+            });
+
+            allPatients = raw;
+            render();
+        });
+
+        // ================================================================
+        //  9.  FIREBASE LISTENER — dokter assignment (realtime)
+        // ================================================================
+        database.ref('dokter_assignments/' + KLASTER).on('value', (snap) => {
+            dokterNama.textContent = snap.val() || 'Belum ditentukan';
+        });
+
+        // ================================================================
+        //  10. TAB SWITCHING
+        // ================================================================
         function switchTab(tab) {
+            currentTab = tab;
+            // update class tabs
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            document.getElementById('tab-' + tab).classList.add('active');
             document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+
+            // re-render (biar status pencarian tetap)
+            render();
         }
 
-        function renderAntrian(snapshot) {
-            const containerWaiting = document.getElementById('daftarWaiting');
-            const containerCalled = document.getElementById('daftarCalled');
-            containerWaiting.innerHTML = '';
-            containerCalled.innerHTML = '';
-
-            let waitingCount = 0;
-            let calledCount = 0;
-
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                if (data.klaster !== klasterSaya) return;
-
-                const id = childSnapshot.key;
-                const nomor = data.nomor_antrian;
-                const nama = data.nama_pasien;
-                const status = data.status;
-                const waktuPanggil = data.waktu_panggil || 0;
-                const waktuDaftar = data.waktu_daftar || 0;
-
-                const div = document.createElement('div');
-                div.className = 'card-antrian';
-
-                const leftDiv = document.createElement('div');
-                if (status === 'waiting') {
-                    leftDiv.innerHTML = `
-                                <strong>${nomor}</strong> - ${nama}
-                                <span class="waktu-daftar"><i class="far fa-clock"></i> ${new Date(waktuDaftar).toLocaleTimeString()}</span>
-                            `;
-                } else {
-                    leftDiv.innerHTML = `
-                                <strong>${nomor}</strong> - ${nama}
-                                <span class="waktu-panggil">🕐 ${new Date(waktuPanggil).toLocaleTimeString()}</span>
-                            `;
-                }
-
-                const rightDiv = document.createElement('div');
-
-                if (status === 'waiting') {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-panggil';
-                    btn.textContent = '📢 Panggil';
-                    btn.dataset.id = id;
-                    btn.dataset.nama = nama;
-                    btn.dataset.nomor = nomor;
-                    btn.addEventListener('click', async function() {
-                        if (confirm(`Panggil ${nama} (${nomor}) ?`)) {
-                            try {
-                                await database.ref('antrians/' + id).update({
-                                    status: 'called',
-                                    waktu_panggil: Date.now()
-                                });
-                                alert(`✅ ${nomor} - ${nama} berhasil dipanggil!`);
-                            } catch (error) {
-                                alert('❌ Gagal memanggil: ' + error.message);
-                            }
-                        }
-                    });
-                    rightDiv.appendChild(btn);
-                    waitingCount++;
-                } else if (status === 'called') {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-panggil-ulang';
-                    btn.textContent = '🔄 Panggil Ulang';
-                    btn.dataset.id = id;
-                    btn.dataset.nama = nama;
-                    btn.dataset.nomor = nomor;
-                    btn.addEventListener('click', async function() {
-                        if (confirm(`Panggil ULANG ${nama} (${nomor}) ?\nPasien akan muncul kembali di layar TV.`)) {
-                            try {
-                                await database.ref('antrians/' + id).update({
-                                    status: 'called',
-                                    waktu_panggil: Date.now()
-                                });
-                                alert(`✅ ${nomor} - ${nama} berhasil dipanggil ULANG!`);
-                            } catch (error) {
-                                alert('❌ Gagal memanggil ulang: ' + error.message);
-                            }
-                        }
-                    });
-                    rightDiv.appendChild(btn);
-                    calledCount++;
-                    div.classList.add('called');
-                }
-
-                div.appendChild(leftDiv);
-                div.appendChild(rightDiv);
-
-                if (status === 'waiting') {
-                    containerWaiting.appendChild(div);
-                } else {
-                    containerCalled.appendChild(div);
-                }
-            });
-
-            if (waitingCount === 0) {
-                containerWaiting.innerHTML = `<p style="color: #aaa; text-align:center; padding:20px;">✅ Tidak ada pasien menunggu.</p>`;
-            }
-            if (calledCount === 0) {
-                containerCalled.innerHTML = `<p style="color: #aaa; text-align:center; padding:20px;">📭 Belum ada pasien yang dipanggil.</p>`;
-            }
-
-            document.getElementById('count-waiting').textContent = waitingCount;
-            document.getElementById('count-called').textContent = calledCount;
-        }
-
-        // ============================================================
-        // FUNGSI INTEGRASI DOKTER (Membaca dari dokter_assignments/K2)
-        // ============================================================
-        function updateDokter() {
-            database.ref('dokter_assignments/' + klasterSaya).once('value', (snapshot) => {
-                const nama = snapshot.val() || 'Belum ditentukan';
-                document.getElementById('dokterNama').textContent = nama;
-            }).catch(err => {
-                console.warn('Gagal load dokter:', err);
-                document.getElementById('dokterNama').textContent = 'Gagal memuat';
-            });
-        }
-
-        // ============================================================
-        // LISTENER REALTIME
-        // ============================================================
-        // 1. Antrian
-        database.ref('antrians').on('value', (snapshot) => {
-            renderAntrian(snapshot);
+        // ================================================================
+        //  11. SEARCH — event input (otomatis, tanpa tombol)
+        // ================================================================
+        searchInput.addEventListener('input', function() {
+            searchTerm = this.value;
+            render();
         });
 
-        // 2. Data dokter untuk klaster ini (update otomatis jika diubah di dashboard utama)
-        database.ref('dokter_assignments/' + klasterSaya).on('value', () => {
-            updateDokter();
+        // Tombol clear
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            searchTerm = '';
+            render();
+            searchInput.focus();
         });
 
-        // ============================================================
-        // INISIALISASI
-        // ============================================================
+        // Tekan Escape untuk clear
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchTerm = '';
+                render();
+                searchInput.blur();
+            }
+        });
+
+        // ================================================================
+        //  12. INISIALISASI
+        // ================================================================
         updateTanggal();
-        updateDokter();
+        loadDokter();
 
-        console.log(`🖥️ Dashboard ${klasterSaya} siap (dokter terintegrasi).`);
+        console.log(`🖥️ Dashboard ${KLASTER} siap · pencarian otomatis aktif.`);
     </script>
+
 </body>
 </html>
